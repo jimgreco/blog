@@ -11,11 +11,20 @@ import {
 const TABLE = process.env.DYNAMODB_TABLE_NAME ?? "BlogPosts"
 
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION ?? "us-east-1",
-  ...(process.env.DYNAMODB_ENDPOINT && {
-    endpoint: process.env.DYNAMODB_ENDPOINT,
-    credentials: { accessKeyId: "local", secretAccessKey: "local" },
-  }),
+  region: process.env.DYNAMO_REGION ?? process.env.AWS_REGION ?? "us-east-1",
+  ...(process.env.DYNAMODB_ENDPOINT
+    ? {
+        endpoint: process.env.DYNAMODB_ENDPOINT,
+        credentials: { accessKeyId: "local", secretAccessKey: "local" },
+      }
+    : process.env.DYNAMO_ACCESS_KEY_ID
+    ? {
+        credentials: {
+          accessKeyId: process.env.DYNAMO_ACCESS_KEY_ID,
+          secretAccessKey: process.env.DYNAMO_SECRET_ACCESS_KEY!,
+        },
+      }
+    : {}),
 })
 
 const db = DynamoDBDocumentClient.from(client)
