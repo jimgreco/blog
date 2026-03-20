@@ -31,11 +31,13 @@ export default async function NotesPage() {
           {notes.map((note) => (
             <li key={note.pk} className="note-item">
               <div className="note-meta">
-                <Link href={`/notes/${note.pk}`} className="note-permalink">
-                  {note.title}
-                </Link>
-                {note.link && (
-                  <a href={absoluteUrl(note.link)} target="_blank" rel="noopener noreferrer" className="link-chip">↗</a>
+                {note.link ? (
+                  <>
+                    <a href={absoluteUrl(note.link)} className="note-permalink">{note.title}</a>
+                    <Link href={`/notes/${note.pk}`} className="permalink-glyph" title="Permalink">★</Link>
+                  </>
+                ) : (
+                  <Link href={`/notes/${note.pk}`} className="note-permalink">{note.title}</Link>
                 )}
                 <span className="note-sep">·</span>
                 <Link href={`/notes/${note.pk}`} className="note-permalink">

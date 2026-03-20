@@ -31,9 +31,13 @@ export default async function NotePage({ params }: Props) {
   return (
     <article>
       <h1 className="note-title">
-        {post.title}
+        {post.link ? (
+          <a href={absoluteUrl(post.link)}>{post.title}</a>
+        ) : (
+          post.title
+        )}
         {post.link && (
-          <a href={absoluteUrl(post.link!)} target="_blank" rel="noopener noreferrer" className="link-chip link-chip-title">↗</a>
+          <Link href={`/notes/${post.pk}`} className="permalink-glyph permalink-glyph-title" title="Permalink">★</Link>
         )}
       </h1>
       <p className="post-date" style={{ marginBottom: "1.5rem" }}>

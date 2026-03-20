@@ -32,9 +32,13 @@ export default async function ProjectPage({ params }: Props) {
     <article>
       <header className="post-header">
         <h1 className="post-title">
-          {post.title}
+          {post.link ? (
+            <a href={absoluteUrl(post.link)}>{post.title}</a>
+          ) : (
+            post.title
+          )}
           {post.link && (
-            <a href={absoluteUrl(post.link!)} target="_blank" rel="noopener noreferrer" className="link-chip link-chip-title">↗</a>
+            <Link href={`/projects/${post.pk}`} className="permalink-glyph permalink-glyph-title" title="Permalink">★</Link>
           )}
         </h1>
         <p className="post-date">{formatDate(post.publishedAt)}</p>

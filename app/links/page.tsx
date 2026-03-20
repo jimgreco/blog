@@ -29,11 +29,13 @@ export default async function LinksPage() {
           {links.map((link) => (
             <li key={link.pk} className="essay-list-item">
               <span className="essay-list-title-row">
-                <Link href={`/links/${link.pk}`} className="essay-list-title">
-                  {link.title}
-                </Link>
-                {link.link && (
-                  <a href={absoluteUrl(link.link)} target="_blank" rel="noopener noreferrer" className="link-chip">↗</a>
+                {link.link ? (
+                  <>
+                    <a href={absoluteUrl(link.link)} className="essay-list-title">{link.title}</a>
+                    <Link href={`/links/${link.pk}`} className="permalink-glyph" title="Permalink">★</Link>
+                  </>
+                ) : (
+                  <Link href={`/links/${link.pk}`} className="essay-list-title">{link.title}</Link>
                 )}
                 {!link.published && (
                   <span className="draft-badge">draft</span>

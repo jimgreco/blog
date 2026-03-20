@@ -449,33 +449,24 @@ body {
   opacity: 1;
 }
 
-/* ── Link chip ── */
+/* ── Permalink glyph (DF-style) ── */
 
-.link-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--bg);
-  background: var(--accent);
-  border-radius: 3px;
-  padding: 1px 5px;
-  margin-left: 0.4rem;
+.permalink-glyph {
+  color: var(--accent);
   text-decoration: none;
-  vertical-align: middle;
-  opacity: 0.85;
+  margin-left: 0.4rem;
+  font-size: 0.7em;
+  opacity: 0.6;
   transition: opacity 0.15s;
 }
 
-.link-chip:hover {
+.permalink-glyph:hover {
   opacity: 1;
   text-decoration: none;
 }
 
-.link-chip-title {
-  font-size: 0.6em;
+.permalink-glyph-title {
+  font-size: 0.5em;
   vertical-align: super;
   margin-left: 0.3em;
 }

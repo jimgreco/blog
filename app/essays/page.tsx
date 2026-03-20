@@ -29,11 +29,13 @@ export default async function EssaysPage() {
           {essays.map((essay) => (
             <li key={essay.pk} className="essay-list-item">
               <span className="essay-list-title-row">
-                <Link href={`/essays/${essay.pk}`} className="essay-list-title">
-                  {essay.title}
-                </Link>
-                {essay.link && (
-                  <a href={absoluteUrl(essay.link)} target="_blank" rel="noopener noreferrer" className="link-chip">↗</a>
+                {essay.link ? (
+                  <>
+                    <a href={absoluteUrl(essay.link)} className="essay-list-title">{essay.title}</a>
+                    <Link href={`/essays/${essay.pk}`} className="permalink-glyph" title="Permalink">★</Link>
+                  </>
+                ) : (
+                  <Link href={`/essays/${essay.pk}`} className="essay-list-title">{essay.title}</Link>
                 )}
                 {!essay.published && (
                   <span className="draft-badge">draft</span>
