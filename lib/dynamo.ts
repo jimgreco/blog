@@ -119,7 +119,7 @@ export async function updatePost(
   slug: string,
   updates: Partial<Omit<Post, "pk">>
 ): Promise<void> {
-  const entries = Object.entries(updates)
+  const entries = Object.entries(updates).filter(([, v]) => v !== undefined)
   const updateExpression =
     "SET " + entries.map((_, i) => `#k${i} = :v${i}`).join(", ")
   const expressionNames = Object.fromEntries(
