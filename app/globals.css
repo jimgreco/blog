@@ -12,7 +12,7 @@
   --link-hover: #aed0e8;
   --border: #333;
   --font-serif: Georgia, "Times New Roman", serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "SFMono-Regular", "Consolas", "Liberation Mono", Menlo, monospace;
 }
 
@@ -23,7 +23,7 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   line-height: 1.65;
   margin: 0;
   padding: 0;
@@ -366,7 +366,7 @@ body {
 }
 
 .post-body blockquote {
-  border-left: 2px solid var(--border);
+  border-left: 2px solid var(--text-muted);
   margin: 1.4em 0 1.4em 0.5em;
   padding: 0 1.2em;
   color: var(--text-muted);
