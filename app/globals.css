@@ -367,10 +367,9 @@ body {
 
 .post-body blockquote {
   border-left: 2px solid var(--text-muted);
-  margin: 1.4em 0 1.4em 0.5em;
-  padding: 0 1.2em;
-  color: var(--text-muted);
-  font-size: 0.95em;
+  margin: 1.4em 0;
+  padding: 0 0 0 1em;
+  color: var(--text);
 }
 
 .post-body code {
