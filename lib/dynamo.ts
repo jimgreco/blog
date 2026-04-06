@@ -39,6 +39,8 @@ export interface Post {
   published: boolean
   type: PostType
   link?: string
+  bskyUri?: string
+  bskyCid?: string
 }
 
 export async function getPostsByType(type: PostType): Promise<Post[]> {

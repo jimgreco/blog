@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { createPost, getPost, getPublishedPosts } from "@/lib/dynamo"
+import { createPost, getPost, getPublishedPosts, Post } from "@/lib/dynamo"
 import { slugify } from "@/lib/utils"
+import { postToBluesky } from "@/lib/bluesky"
 
 export async function GET() {
   const posts = await getPublishedPosts()
@@ -32,7 +33,16 @@ export async function POST(req: NextRequest) {
     slug = `${slugify(title)}-${attempt}`
   }
 
-  const post = { pk: slug, title: title.trim(), body, link, type: type ?? "note", publishedAt, published }
+  const post: Post = { pk: slug, title: title.trim(), body, link, type: type ?? "note", publishedAt, published }
+  
+  if (published) {
+    const bsky = await postToBluesky(post.title, post.body, post.pk, post.type)
+    if (bsky) {
+      post.bskyUri = bsky.uri
+      post.bskyCid = bsky.cid
+    }
+  }
+
   await createPost(post)
   revalidatePath("/notes")
   revalidatePath("/essays")
