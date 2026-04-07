@@ -9,11 +9,14 @@ async function getAgent() {
   const password = process.env.BLUESKY_PASSWORD
 
   if (!identifier || !password) {
+    console.error("[Bsky] Credentials missing from process.env")
     throw new Error("Bluesky credentials not configured")
   }
 
+  console.log(`[Bsky] Attempting login for identifier: ${identifier}`)
   agent = new BskyAgent({ service: "https://bsky.social" })
   await agent.login({ identifier, password })
+  console.log("[Bsky] Login successful")
   return agent
 }
 

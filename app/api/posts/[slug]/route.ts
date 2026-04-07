@@ -28,17 +28,26 @@ export async function PUT(req: NextRequest, { params }: Context) {
   const updates: any = { title, body, link, publishedAt, published, type }
 
   if (published) {
+    console.log(`[Syndicate-PUT] Starting for slug: ${params.slug}`)
     if (existing.bskyUri && existing.bskyCid) {
+      console.log(`[Syndicate-PUT] Updating existing: ${existing.bskyUri}`)
       const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, title, body, params.slug, type ?? existing.type)
       if (bsky) {
+        console.log(`[Syndicate-PUT] Success (update): ${bsky.uri}`)
         updates.bskyUri = bsky.uri
         updates.bskyCid = bsky.cid
+      } else {
+        console.log(`[Syndicate-PUT] Failed (update returned null)`)
       }
     } else {
+      console.log(`[Syndicate-PUT] Creating new for slug: ${params.slug}`)
       const bsky = await postToBluesky(title, body, params.slug, type ?? existing.type)
       if (bsky) {
+        console.log(`[Syndicate-PUT] Success (new): ${bsky.uri}`)
         updates.bskyUri = bsky.uri
         updates.bskyCid = bsky.cid
+      } else {
+        console.log(`[Syndicate-PUT] Failed (new returned null)`)
       }
     }
   } else {
