@@ -121,3 +121,40 @@ export async function deleteBlueskyPost(uri: string) {
     return false
   }
 }
+
+export interface BlueskyStats {
+  likeCount: number
+  replyCount: number
+  repostCount: number
+}
+
+export async function getBlueskyStats(uris: string[]): Promise<Record<string, BlueskyStats>> {
+  if (uris.length === 0) return {}
+  
+  try {
+    const _agent = await getAgent()
+    // getPosts supports up to 25 URIs at a time
+    const res = await _agent.getPosts({ uris })
+    
+    const stats: Record<string, BlueskyStats> = {}
+    res.data.posts.forEach((post) => {
+      stats[post.uri] = {
+        likeCount: post.likeCount ?? 0,
+        replyCount: post.replyCount ?? 0,
+        repostCount: post.repostCount ?? 0,
+      }
+    })
+    
+    return stats
+  } catch (err) {
+    console.error("Failed to fetch Bluesky stats:", err)
+    return {}
+  }
+}
+
+export function getPublicPostUrl(uri: string) {
+  const parts = uri.replace("at://", "").split("/")
+  const repo = parts[0]
+  const rkey = parts[2]
+  return `https://bsky.app/profile/${repo}/post/${rkey}`
+}

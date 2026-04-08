@@ -201,6 +201,24 @@ body {
   color: var(--link);
 }
 
+.note-bsky-stats {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: color 0.1s;
+}
+
+.note-bsky-stats:hover {
+  color: var(--link);
+}
+
+.stat-sep {
+  opacity: 0.5;
+}
+
 .note-sep {
   color: var(--border);
   font-size: 0.7rem;

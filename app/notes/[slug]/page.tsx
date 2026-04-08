@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getPost } from "@/lib/dynamo"
 import { formatDate, absoluteUrl } from "@/lib/utils"
+import { getBlueskyStats, getPublicPostUrl } from "@/lib/bluesky"
 
 export const dynamic = "force-dynamic"
 
@@ -28,6 +29,9 @@ export default async function NotePage({ params }: Props) {
 
   if (!post || !post.published || post.type !== "note") notFound()
 
+  const bskyStats = post.bskyUri ? await getBlueskyStats([post.bskyUri]) : null
+  const stats = post.bskyUri && bskyStats ? bskyStats[post.bskyUri] : null
+
   return (
     <article>
       <h1 className="note-title">
@@ -42,6 +46,17 @@ export default async function NotePage({ params }: Props) {
       </h1>
       <p className="post-date" style={{ marginBottom: "1.5rem" }}>
         {formatDate(post.publishedAt)}
+        {stats && (
+          <>
+            <span className="note-sep">·</span>
+            <a href={getPublicPostUrl(post.bskyUri!)} className="note-bsky-stats" target="_blank" rel="noopener noreferrer">
+              {stats.likeCount > 0 && <span className="stat-item">{stats.likeCount} like{stats.likeCount !== 1 ? "s" : ""}</span>}
+              {stats.likeCount > 0 && stats.replyCount > 0 && <span className="stat-sep">, </span>}
+              {stats.replyCount > 0 && <span className="stat-item">{stats.replyCount} repl{stats.replyCount !== 1 ? "ies" : "y"}</span>}
+              {stats.likeCount === 0 && stats.replyCount === 0 && <span className="stat-item">Discuss on Bluesky</span>}
+            </a>
+          </>
+        )}
       </p>
       <div className="post-body">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
