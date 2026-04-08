@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     console.log(`[Syndicate] Starting for slug: ${post.pk}, type: ${post.type}, syndicatable: ${isSyndicatable}`)
     
     if (isSyndicatable) {
-      const bsky = await postToBluesky(post.title, post.body, post.pk, post.type)
+      const bsky = await postToBluesky(post.title, post.body, post.pk, post.type, post.link)
       if (bsky) {
         console.log(`[Syndicate] Success: ${bsky.uri}`)
         post.bskyUri = bsky.uri

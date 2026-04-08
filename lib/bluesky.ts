@@ -23,7 +23,7 @@ async function getAgent() {
 function stripMarkdown(body: string): string {
   // Basic markdown removal while trying to maintain spacing
   return body
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1") // Links: [text](url) -> text
+    .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "$1 ($2)") // Links: [text](url) -> text (url)
     .replace(/[\*_]{1,2}([^\*_]+)[\*_]{1,2}/g, "$1") // Bold/Italic
     .replace(/^#+\s+/gm, "") // Headers
     .replace(/`{1,3}[^`]+`{1,3}/g, "") // Code blocks
@@ -31,10 +31,15 @@ function stripMarkdown(body: string): string {
     .trim()
 }
 
-async function prepareRichText(body: string, slug: string, type: string) {
+async function prepareRichText(body: string, slug: string, type: string, externalLink?: string) {
   const _agent = await getAgent()
-  const plainText = stripMarkdown(body)
+  let plainText = stripMarkdown(body)
   
+  // If there's an external link (like for a note/essay), append it if not already in text
+  if (externalLink && !plainText.includes(externalLink)) {
+    plainText += `\n\n${externalLink}`
+  }
+
   let text = plainText
   const MAX_CHARS = 300
   
@@ -42,7 +47,7 @@ async function prepareRichText(body: string, slug: string, type: string) {
     const url = `https://jim-greco.com/${type}s/${slug}`
     // Truncate to make room for ellipsis and URL (~30-40 chars for URL)
     // We want some buffer. 250 seems safe.
-    text = plainText.slice(0, 250).trimEnd() + "... " + url
+    text = plainText.slice(0, 240).trimEnd() + "... " + url
   }
 
   const rt = new RichText({ text })
@@ -50,10 +55,10 @@ async function prepareRichText(body: string, slug: string, type: string) {
   return rt
 }
 
-export async function postToBluesky(_title: string, body: string, slug: string, type: string) {
+export async function postToBluesky(_title: string, body: string, slug: string, type: string, externalLink?: string) {
   try {
     const _agent = await getAgent()
-    const rt = await prepareRichText(body, slug, type)
+    const rt = await prepareRichText(body, slug, type, externalLink)
 
     const res = await _agent.post({
       $type: "app.bsky.feed.post",
@@ -69,10 +74,10 @@ export async function postToBluesky(_title: string, body: string, slug: string, 
   }
 }
 
-export async function updateBlueskyPost(uri: string, cid: string, _title: string, body: string, slug: string, type: string) {
+export async function updateBlueskyPost(uri: string, cid: string, _title: string, body: string, slug: string, type: string, externalLink?: string) {
   try {
     const _agent = await getAgent()
-    const rt = await prepareRichText(body, slug, type)
+    const rt = await prepareRichText(body, slug, type, externalLink)
 
     const uriParts = uri.replace("at://", "").split("/")
     const repo = uriParts[0]
