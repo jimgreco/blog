@@ -36,14 +36,20 @@ export async function POST(req: NextRequest) {
   const post: Post = { pk: slug, title: title.trim(), body, link, type: type ?? "note", publishedAt, published }
   
   if (published) {
-    console.log(`[Syndicate] Starting for slug: ${post.pk}`)
-    const bsky = await postToBluesky(post.title, post.body, post.pk, post.type)
-    if (bsky) {
-      console.log(`[Syndicate] Success: ${bsky.uri}`)
-      post.bskyUri = bsky.uri
-      post.bskyCid = bsky.cid
+    const isSyndicatable = post.type === "note" || post.type === "essay"
+    console.log(`[Syndicate] Starting for slug: ${post.pk}, type: ${post.type}, syndicatable: ${isSyndicatable}`)
+    
+    if (isSyndicatable) {
+      const bsky = await postToBluesky(post.title, post.body, post.pk, post.type)
+      if (bsky) {
+        console.log(`[Syndicate] Success: ${bsky.uri}`)
+        post.bskyUri = bsky.uri
+        post.bskyCid = bsky.cid
+      } else {
+        console.log(`[Syndicate] Failed (returned null)`)
+      }
     } else {
-      console.log(`[Syndicate] Failed (returned null)`)
+      console.log(`[Syndicate] Skipping: type ${post.type} is not syndicated to Bluesky`)
     }
   }
 
