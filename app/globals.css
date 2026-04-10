@@ -363,13 +363,18 @@ body {
   margin: 1.8em 0 0.5em;
 }
 
-.post-body a {
+.post-body a,
+.note-body a,
+.preview-body a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 2px;
+  font-weight: bold;
 }
 
-.post-body a:hover {
+.post-body a:hover,
+.note-body a:hover,
+.preview-body a:hover {
   color: var(--link-hover);
 }
 

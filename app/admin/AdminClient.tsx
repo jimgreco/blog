@@ -111,7 +111,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
         publishedAt: new Date(publishedAt).toISOString(),
         published,
         bskyText: bskyText,
-        bskyLinkTarget: bskyText.trim() ? bskyLinkTarget : undefined,
+        bskyLinkTarget: bskyLinkTarget,
       }
 
       if (isNew) {
@@ -350,42 +350,40 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
               onChange={(e) => setBskyText(e.target.value)}
               placeholder="Custom text for social posts… (uses main body if blank for Mastodon)"
             />
-            {bskyText.trim() && (
-              <div className="bsky-link-target">
-                <span className="bsky-link-target-label">Link to:</span>
-                <label className="bsky-radio-label">
-                  <input
-                    type="radio"
-                    name="bskyLinkTarget"
-                    value="post"
-                    checked={bskyLinkTarget === "post"}
-                    onChange={() => setBskyLinkTarget("post")}
-                  />
-                  Link to Post
-                </label>
-                <label className={`bsky-radio-label ${!link.trim() ? "bsky-radio-disabled" : ""}`}>
-                  <input
-                    type="radio"
-                    name="bskyLinkTarget"
-                    value="link"
-                    checked={bskyLinkTarget === "link"}
-                    onChange={() => setBskyLinkTarget("link")}
-                    disabled={!link.trim()}
-                  />
-                  Provided URL{!link.trim() && " (none set)"}
-                </label>
-                <label className="bsky-radio-label">
-                  <input
-                    type="radio"
-                    name="bskyLinkTarget"
-                    value="none"
-                    checked={bskyLinkTarget === "none"}
-                    onChange={() => setBskyLinkTarget("none")}
-                  />
-                  None
-                </label>
-              </div>
-            )}
+            <div className="bsky-link-target">
+              <span className="bsky-link-target-label">LINK TO:</span>
+              <label className="bsky-radio-label">
+                <input
+                  type="radio"
+                  name="bskyLinkTarget"
+                  value="post"
+                  checked={bskyLinkTarget === "post"}
+                  onChange={() => setBskyLinkTarget("post")}
+                />
+                LINK TO POST
+              </label>
+              <label className={`bsky-radio-label ${!link.trim() ? "bsky-radio-disabled" : ""}`}>
+                <input
+                  type="radio"
+                  name="bskyLinkTarget"
+                  value="link"
+                  checked={bskyLinkTarget === "link"}
+                  onChange={() => setBskyLinkTarget("link")}
+                  disabled={!link.trim()}
+                />
+                PROVIDED URL{!link.trim() && " (NONE SET)"}
+              </label>
+              <label className="bsky-radio-label">
+                <input
+                  type="radio"
+                  name="bskyLinkTarget"
+                  value="none"
+                  checked={bskyLinkTarget === "none"}
+                  onChange={() => setBskyLinkTarget("none")}
+                />
+                NONE
+              </label>
+            </div>
           </div>
 
           {error && <p className="editor-error">{error}</p>}
