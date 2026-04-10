@@ -104,20 +104,11 @@ async function fetchLinkCard(url: string, _agent: BskyAgent) {
   }
 }
 
-async function prepareRichText(text: string, linkUrl: string) {
+async function prepareRichText(text: string) {
   const _agent = await getAgent()
 
-  let fullText = text
-  if (!fullText.includes(linkUrl)) {
-    fullText += `\n\n${linkUrl}`
-  }
-
-  let finalText = fullText
   const MAX_CHARS = 300
-
-  if (fullText.length > MAX_CHARS) {
-    finalText = text.slice(0, 240).trimEnd() + `... ${linkUrl}`
-  }
+  const finalText = text.length > MAX_CHARS ? text.slice(0, 297).trimEnd() + "..." : text
 
   const rt = new RichText({ text: finalText })
   await rt.detectFacets(_agent)
@@ -128,7 +119,7 @@ export async function postToBluesky(text: string, linkUrl: string) {
   try {
     const _agent = await getAgent()
     const [rt, card] = await Promise.all([
-      prepareRichText(text, linkUrl),
+      prepareRichText(text),
       fetchLinkCard(linkUrl, _agent),
     ])
 
@@ -155,7 +146,7 @@ export async function updateBlueskyPost(uri: string, cid: string, text: string, 
   try {
     const _agent = await getAgent()
     const [rt, card] = await Promise.all([
-      prepareRichText(text, linkUrl),
+      prepareRichText(text),
       fetchLinkCard(linkUrl, _agent),
     ])
 
