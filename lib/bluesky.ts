@@ -142,7 +142,7 @@ export async function postToBluesky(text: string, linkUrl: string) {
   }
 }
 
-export async function updateBlueskyPost(uri: string, cid: string, text: string, linkUrl: string) {
+export async function updateBlueskyPost(uri: string, _cid: string, text: string, linkUrl: string) {
   try {
     const _agent = await getAgent()
     const [rt, card] = await Promise.all([
@@ -155,34 +155,31 @@ export async function updateBlueskyPost(uri: string, cid: string, text: string, 
     const collection = uriParts[1]
     const rkey = uriParts[2]
 
-    // Fetch original record to keep createdAt and get live CID for the swap
-    const existing = await _agent.com.atproto.repo.getRecord({ repo, collection, rkey })
-
-    let createdAt = new Date().toISOString()
-    if (existing?.data?.value && typeof (existing.data.value as any).createdAt === "string") {
-      createdAt = (existing.data.value as any).createdAt
-    }
-    const liveCid = existing?.data?.cid as string | undefined
-
     const record: any = {
       $type: "app.bsky.feed.post",
       text: rt.text,
       facets: rt.facets,
-      createdAt,
     }
 
     if (card) {
       record.embed = { $type: "app.bsky.embed.external", external: card }
     }
 
-    const res = await _agent.com.atproto.repo.putRecord({
-      repo,
-      collection,
-      rkey,
-      swapRecord: liveCid,
-      record,
-    })
+    // Try to preserve original createdAt; if the record is gone, use now
+    try {
+      const orig = await _agent.com.atproto.repo.getRecord({ repo, collection, rkey })
+      if (orig?.data?.value && typeof (orig.data.value as any).createdAt === "string") {
+        record.createdAt = (orig.data.value as any).createdAt
+      }
+    } catch (e) {
+      console.warn("[Bsky] Could not fetch existing record for createdAt:", e)
+    }
+    if (!record.createdAt) record.createdAt = new Date().toISOString()
 
+    // No swapRecord — unconditional upsert
+    const res = await _agent.com.atproto.repo.putRecord({ repo, collection, rkey, record })
+
+    console.log(`[Bsky] putRecord success: ${res.data.uri}`)
     return { uri: res.data.uri, cid: res.data.cid }
   } catch (err) {
     console.error("Failed to update Bluesky post:", err)
