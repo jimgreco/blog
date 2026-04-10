@@ -43,6 +43,8 @@ export interface Post {
   bskyCid?: string
   bskyText?: string
   bskyLinkTarget?: "post" | "link"
+  mastodonUri?: string
+  mastodonId?: string
 }
 
 export async function getPostsByType(type: PostType): Promise<Post[]> {

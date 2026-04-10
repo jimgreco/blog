@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getPost, updatePost, deletePost } from "@/lib/dynamo"
 import { postToBluesky, updateBlueskyPost, deleteBlueskyPost } from "@/lib/bluesky"
+import { postToMastodon, updateMastodonPost, deleteMastodonPost } from "@/lib/mastodon"
 
 interface Context {
   params: { slug: string }
@@ -29,38 +30,63 @@ export async function PUT(req: NextRequest, { params }: Context) {
 
   console.log(`[PUT /${params.slug}] published=${published} bskyText=${JSON.stringify(bskyText)} existingBskyUri=${existing.bskyUri ?? "none"}`)
 
-  if (published && bskyText?.trim()) {
+  if (published) {
     const postType = type ?? existing.type
     const postUrl = `https://jim-greco.com/${postType}s/${params.slug}`
     const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
 
-    if (existing.bskyUri && existing.bskyCid) {
-      console.log(`[Syndicate-PUT] Updating existing: ${existing.bskyUri}`)
-      const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, bskyText.trim(), linkUrl)
-      if (bsky) {
-        console.log(`[Syndicate-PUT] Success (update): ${bsky.uri}`)
-        updates.bskyUri = bsky.uri
-        updates.bskyCid = bsky.cid
+    // 1. Bluesky (uses dedicated bskyText)
+    if (bskyText?.trim()) {
+      if (existing.bskyUri && existing.bskyCid) {
+        console.log(`[Syndicate-PUT:Bsky] Updating existing: ${existing.bskyUri}`)
+        const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, bskyText.trim(), linkUrl)
+        if (bsky) {
+          updates.bskyUri = bsky.uri
+          updates.bskyCid = bsky.cid
+        }
       } else {
-        console.log(`[Syndicate-PUT] Failed (update returned null)`)
+        const bsky = await postToBluesky(bskyText.trim(), linkUrl)
+        if (bsky) {
+          updates.bskyUri = bsky.uri
+          updates.bskyCid = bsky.cid
+        }
       }
-    } else {
-      console.log(`[Syndicate-PUT] Creating new for slug: ${params.slug}`)
-      const bsky = await postToBluesky(bskyText.trim(), linkUrl)
-      if (bsky) {
-        console.log(`[Syndicate-PUT] Success (new): ${bsky.uri}`)
-        updates.bskyUri = bsky.uri
-        updates.bskyCid = bsky.cid
+    } else if (existing.bskyUri) {
+      // If bskyText cleared, delete the post
+      await deleteBlueskyPost(existing.bskyUri)
+      updates.bskyUri = null
+      updates.bskyCid = null
+    }
+
+    // 2. Mastodon (uses title/body/link)
+    const isSyndicatable = postType === "note" || postType === "essay"
+    if (isSyndicatable && process.env.MASTODON_INSTANCE_URL && process.env.MASTODON_ACCESS_TOKEN) {
+      if (existing.mastodonId) {
+        console.log(`[Syndicate-PUT:Masto] Updating existing: ${existing.mastodonId}`)
+        const masto = await updateMastodonPost(existing.mastodonId, title, body, params.slug, postType, link)
+        if (masto) {
+          updates.mastodonUri = masto.uri
+          updates.mastodonId = masto.id
+        }
       } else {
-        console.log(`[Syndicate-PUT] Failed (new returned null)`)
+        const masto = await postToMastodon(title, body, params.slug, postType, link)
+        if (masto) {
+          updates.mastodonUri = masto.uri
+          updates.mastodonId = masto.id
+        }
       }
     }
   } else {
-    // No Bluesky text (or unpublished) — delete existing post if any
+    // Unpublishing - delete from all platforms
     if (existing.bskyUri) {
       await deleteBlueskyPost(existing.bskyUri)
       updates.bskyUri = null
       updates.bskyCid = null
+    }
+    if (existing.mastodonId) {
+      await deleteMastodonPost(existing.mastodonId)
+      updates.mastodonUri = null
+      updates.mastodonId = null
     }
   }
 
@@ -85,6 +111,9 @@ export async function DELETE(_req: NextRequest, { params }: Context) {
   const existing = await getPost(params.slug)
   if (existing?.bskyUri) {
     await deleteBlueskyPost(existing.bskyUri)
+  }
+  if (existing?.mastodonId) {
+    await deleteMastodonPost(existing.mastodonId)
   }
 
   await deletePost(params.slug)

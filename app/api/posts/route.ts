@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth"
 import { createPost, getPost, getPublishedPosts, Post } from "@/lib/dynamo"
 import { slugify } from "@/lib/utils"
 import { postToBluesky } from "@/lib/bluesky"
+import { postToMastodon } from "@/lib/mastodon"
 
 export async function GET() {
   const posts = await getPublishedPosts()
@@ -45,17 +46,28 @@ export async function POST(req: NextRequest) {
     bskyLinkTarget: bskyLinkTarget || undefined,
   }
 
-  if (published && bskyText?.trim()) {
-    const postUrl = `https://jim-greco.com/${post.type}s/${post.pk}`
-    const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
-    console.log(`[Syndicate] Posting to Bluesky for slug: ${post.pk}, linkUrl: ${linkUrl}`)
-    const bsky = await postToBluesky(bskyText.trim(), linkUrl)
-    if (bsky) {
-      console.log(`[Syndicate] Success: ${bsky.uri}`)
-      post.bskyUri = bsky.uri
-      post.bskyCid = bsky.cid
-    } else {
-      console.log(`[Syndicate] Failed (returned null)`)
+  if (published) {
+    // 1. Bluesky (if bskyText provided)
+    if (bskyText?.trim()) {
+      const postUrl = `https://jim-greco.com/${post.type}s/${post.pk}`
+      const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
+      console.log(`[Syndicate:Bsky] Posting for slug: ${post.pk}, linkUrl: ${linkUrl}`)
+      const bsky = await postToBluesky(bskyText.trim(), linkUrl)
+      if (bsky) {
+        post.bskyUri = bsky.uri
+        post.bskyCid = bsky.cid
+      }
+    }
+
+    // 2. Mastodon (uses title/body/link)
+    const isSyndicatable = post.type === "note" || post.type === "essay"
+    if (isSyndicatable && process.env.MASTODON_INSTANCE_URL && process.env.MASTODON_ACCESS_TOKEN) {
+      const masto = await postToMastodon(post.title, post.body, post.pk, post.type, post.link)
+      if (masto) {
+        console.log(`[Syndicate:Masto] Success: ${masto.uri}`)
+        post.mastodonUri = masto.uri
+        post.mastodonId = masto.id
+      }
     }
   }
 
