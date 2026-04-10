@@ -33,7 +33,8 @@ export async function PUT(req: NextRequest, { params }: Context) {
   if (published) {
     const postType = type ?? existing.type
     const postUrl = `https://jim-greco.com/${postType}s/${params.slug}`
-    const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
+    let linkUrl: string | undefined = bskyLinkTarget === "link" && link ? link : postUrl
+    if (bskyLinkTarget === "none") linkUrl = undefined
 
     // 1. Bluesky (uses dedicated bskyText)
     if (bskyText?.trim()) {
@@ -58,18 +59,19 @@ export async function PUT(req: NextRequest, { params }: Context) {
       updates.bskyCid = null
     }
 
-    // 2. Mastodon (uses title/body/link)
+    // 2. Mastodon (uses bskyText if available, else body)
     const isSyndicatable = postType === "note" || postType === "essay"
     if (isSyndicatable && process.env.MASTODON_INSTANCE_URL && process.env.MASTODON_ACCESS_TOKEN) {
+      const mastoBody = bskyText?.trim() || body
       if (existing.mastodonId) {
         console.log(`[Syndicate-PUT:Masto] Updating existing: ${existing.mastodonId}`)
-        const masto = await updateMastodonPost(existing.mastodonId, title, body, params.slug, postType, link)
+        const masto = await updateMastodonPost(existing.mastodonId, title, mastoBody, params.slug, postType, linkUrl)
         if (masto) {
           updates.mastodonUri = masto.uri
           updates.mastodonId = masto.id
         }
       } else {
-        const masto = await postToMastodon(title, body, params.slug, postType, link)
+        const masto = await postToMastodon(title, mastoBody, params.slug, postType, linkUrl)
         if (masto) {
           updates.mastodonUri = masto.uri
           updates.mastodonId = masto.id

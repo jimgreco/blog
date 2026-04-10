@@ -47,10 +47,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (published) {
+    const postUrl = `https://jim-greco.com/${post.type}s/${post.pk}`
+    let linkUrl: string | undefined = bskyLinkTarget === "link" && link ? link : postUrl
+    if (bskyLinkTarget === "none") linkUrl = undefined
+
     // 1. Bluesky (if bskyText provided)
     if (bskyText?.trim()) {
-      const postUrl = `https://jim-greco.com/${post.type}s/${post.pk}`
-      const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
       console.log(`[Syndicate:Bsky] Posting for slug: ${post.pk}, linkUrl: ${linkUrl}`)
       const bsky = await postToBluesky(bskyText.trim(), linkUrl)
       if (bsky) {
@@ -59,10 +61,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Mastodon (uses title/body/link)
+    // 2. Mastodon (uses bskyText if available, else body)
     const isSyndicatable = post.type === "note" || post.type === "essay"
     if (isSyndicatable && process.env.MASTODON_INSTANCE_URL && process.env.MASTODON_ACCESS_TOKEN) {
-      const masto = await postToMastodon(post.title, post.body, post.pk, post.type, post.link)
+      const mastoBody = bskyText?.trim() || body
+      const masto = await postToMastodon(post.title, mastoBody, post.pk, post.type, linkUrl)
       if (masto) {
         console.log(`[Syndicate:Masto] Success: ${masto.uri}`)
         post.mastodonUri = masto.uri

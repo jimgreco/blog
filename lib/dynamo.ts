@@ -42,7 +42,7 @@ export interface Post {
   bskyUri?: string
   bskyCid?: string
   bskyText?: string
-  bskyLinkTarget?: "post" | "link"
+  bskyLinkTarget?: "post" | "link" | "none"
   mastodonUri?: string
   mastodonId?: string
 }

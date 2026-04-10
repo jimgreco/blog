@@ -653,6 +653,12 @@ body {
   font-size: 0.75rem;
 }
 
+.admin-post-meta .masto-badge {
+  color: #6364ff;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+}
+
 .type-badge {
   display: inline-block;
   font-family: var(--font-sans);

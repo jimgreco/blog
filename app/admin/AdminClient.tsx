@@ -35,7 +35,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
   const [publishedAt, setPublishedAt] = useState("")
   const [published, setPublished] = useState(true)
   const [bskyText, setBskyText] = useState("")
-  const [bskyLinkTarget, setBskyLinkTarget] = useState<"post" | "link">("post")
+  const [bskyLinkTarget, setBskyLinkTarget] = useState<"post" | "link" | "none">("post")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
@@ -213,6 +213,9 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
                   {post.bskyUri && (
                     <span className="bsky-badge"> · Bluesky</span>
                   )}
+                  {post.mastodonUri && (
+                    <span className="masto-badge"> · Mastodon</span>
+                  )}
                 </p>
               </div>
               <div className="admin-post-actions">
@@ -335,7 +338,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
 
           <div className="form-group">
             <div className="bsky-label-row">
-              <label htmlFor="bskyText">Bluesky post <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(leave blank to skip / remove)</span></label>
+              <label htmlFor="bskyText">Social post (BlueSky/Mastodon) <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(leave blank to skip)</span></label>
               <span className={`bsky-char-count ${bskyOverLimit ? "bsky-char-over" : ""}`}>
                 {bskyCharCount}/300
               </span>
@@ -345,7 +348,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
               className="form-textarea bsky-textarea"
               value={bskyText}
               onChange={(e) => setBskyText(e.target.value)}
-              placeholder="Text for Bluesky post… (a link will be appended automatically)"
+              placeholder="Custom text for social posts… (uses main body if blank for Mastodon)"
             />
             {bskyText.trim() && (
               <div className="bsky-link-target">
@@ -358,7 +361,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
                     checked={bskyLinkTarget === "post"}
                     onChange={() => setBskyLinkTarget("post")}
                   />
-                  Post URL
+                  Link to Post
                 </label>
                 <label className={`bsky-radio-label ${!link.trim() ? "bsky-radio-disabled" : ""}`}>
                   <input
@@ -369,7 +372,17 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
                     onChange={() => setBskyLinkTarget("link")}
                     disabled={!link.trim()}
                   />
-                  External URL{!link.trim() && " (none set)"}
+                  Provided URL{!link.trim() && " (none set)"}
+                </label>
+                <label className="bsky-radio-label">
+                  <input
+                    type="radio"
+                    name="bskyLinkTarget"
+                    value="none"
+                    checked={bskyLinkTarget === "none"}
+                    onChange={() => setBskyLinkTarget("none")}
+                  />
+                  None
                 </label>
               </div>
             )}

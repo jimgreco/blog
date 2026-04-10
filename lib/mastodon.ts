@@ -31,8 +31,13 @@ async function prepareText(body: string, slug: string, type: string, externalLin
   const MAX_CHARS = 500 // Mastodon default limit
   
   if (plainText.length > MAX_CHARS) {
-    const url = `https://jim-greco.com/${type}s/${slug}`
-    text = plainText.slice(0, 450).trimEnd() + "... " + url
+    if (externalLink) {
+      // Truncate and append the provided link
+      text = plainText.slice(0, 450).trimEnd() + "... " + externalLink
+    } else {
+      // Just truncate
+      text = plainText.slice(0, 497).trimEnd() + "..."
+    }
   }
 
   return text

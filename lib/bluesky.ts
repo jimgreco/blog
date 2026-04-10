@@ -55,7 +55,8 @@ function extractMeta(html: string, attr: "property" | "name", value: string): st
   return ""
 }
 
-async function fetchLinkCard(url: string, _agent: BskyAgent) {
+async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
+  if (!url) return null
   try {
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; BlogBot/1.0)" },
@@ -115,7 +116,7 @@ async function prepareRichText(text: string) {
   return rt
 }
 
-export async function postToBluesky(text: string, linkUrl: string) {
+export async function postToBluesky(text: string, linkUrl?: string) {
   try {
     const _agent = await getAgent()
     const [rt, card] = await Promise.all([
@@ -142,7 +143,7 @@ export async function postToBluesky(text: string, linkUrl: string) {
   }
 }
 
-export async function updateBlueskyPost(uri: string, _cid: string, text: string, linkUrl: string) {
+export async function updateBlueskyPost(uri: string, _cid: string, text: string, linkUrl?: string) {
   try {
     const _agent = await getAgent()
     console.log(`[Bsky] updateBlueskyPost — uri: ${uri}, linkUrl: ${linkUrl}`)
