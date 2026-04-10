@@ -41,6 +41,8 @@ export interface Post {
   link?: string
   bskyUri?: string
   bskyCid?: string
+  bskyText?: string
+  bskyLinkTarget?: "post" | "link"
 }
 
 export async function getPostsByType(type: PostType): Promise<Post[]> {

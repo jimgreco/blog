@@ -21,44 +21,40 @@ export async function PUT(req: NextRequest, { params }: Context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { title, body, link, publishedAt, published, type } = await req.json()
+  const { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget } = await req.json()
   const existing = await getPost(params.slug)
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  const updates: any = { title, body, link, publishedAt, published, type }
+  const updates: any = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
 
-  if (published) {
+  if (published && bskyText?.trim()) {
     const postType = type ?? existing.type
-    const isSyndicatable = postType === "note" || postType === "essay"
-    console.log(`[Syndicate-PUT] Starting for slug: ${params.slug}, type: ${postType}, syndicatable: ${isSyndicatable}`)
+    const postUrl = `https://jim-greco.com/${postType}s/${params.slug}`
+    const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
 
-    if (isSyndicatable) {
-      if (existing.bskyUri && existing.bskyCid) {
-        console.log(`[Syndicate-PUT] Updating existing: ${existing.bskyUri}`)
-        const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, title, body, params.slug, postType, link)
-        if (bsky) {
-          console.log(`[Syndicate-PUT] Success (update): ${bsky.uri}`)
-          updates.bskyUri = bsky.uri
-          updates.bskyCid = bsky.cid
-        } else {
-          console.log(`[Syndicate-PUT] Failed (update returned null)`)
-        }
+    if (existing.bskyUri && existing.bskyCid) {
+      console.log(`[Syndicate-PUT] Updating existing: ${existing.bskyUri}`)
+      const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, bskyText.trim(), linkUrl)
+      if (bsky) {
+        console.log(`[Syndicate-PUT] Success (update): ${bsky.uri}`)
+        updates.bskyUri = bsky.uri
+        updates.bskyCid = bsky.cid
       } else {
-        console.log(`[Syndicate-PUT] Creating new for slug: ${params.slug}`)
-        const bsky = await postToBluesky(title, body, params.slug, postType, link)
-        if (bsky) {
-          console.log(`[Syndicate-PUT] Success (new): ${bsky.uri}`)
-          updates.bskyUri = bsky.uri
-          updates.bskyCid = bsky.cid
-        } else {
-          console.log(`[Syndicate-PUT] Failed (new returned null)`)
-        }
+        console.log(`[Syndicate-PUT] Failed (update returned null)`)
       }
     } else {
-      console.log(`[Syndicate-PUT] Skipping: type ${postType} is not syndicated to Bluesky`)
+      console.log(`[Syndicate-PUT] Creating new for slug: ${params.slug}`)
+      const bsky = await postToBluesky(bskyText.trim(), linkUrl)
+      if (bsky) {
+        console.log(`[Syndicate-PUT] Success (new): ${bsky.uri}`)
+        updates.bskyUri = bsky.uri
+        updates.bskyCid = bsky.cid
+      } else {
+        console.log(`[Syndicate-PUT] Failed (new returned null)`)
+      }
     }
   } else {
-    // Unpublishing
+    // No Bluesky text (or unpublished) — delete existing post if any
     if (existing.bskyUri) {
       await deleteBlueskyPost(existing.bskyUri)
       updates.bskyUri = null

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { title, body, link, type, publishedAt, published } = await req.json()
+  const { title, body, link, type, publishedAt, published, bskyText, bskyLinkTarget } = await req.json()
 
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required." }, { status: 400 })
@@ -33,23 +33,29 @@ export async function POST(req: NextRequest) {
     slug = `${slugify(title)}-${attempt}`
   }
 
-  const post: Post = { pk: slug, title: title.trim(), body, link, type: type ?? "note", publishedAt, published }
-  
-  if (published) {
-    const isSyndicatable = post.type === "note" || post.type === "essay"
-    console.log(`[Syndicate] Starting for slug: ${post.pk}, type: ${post.type}, syndicatable: ${isSyndicatable}`)
-    
-    if (isSyndicatable) {
-      const bsky = await postToBluesky(post.title, post.body, post.pk, post.type, post.link)
-      if (bsky) {
-        console.log(`[Syndicate] Success: ${bsky.uri}`)
-        post.bskyUri = bsky.uri
-        post.bskyCid = bsky.cid
-      } else {
-        console.log(`[Syndicate] Failed (returned null)`)
-      }
+  const post: Post = {
+    pk: slug,
+    title: title.trim(),
+    body,
+    link,
+    type: type ?? "note",
+    publishedAt,
+    published,
+    bskyText: bskyText || undefined,
+    bskyLinkTarget: bskyLinkTarget || undefined,
+  }
+
+  if (published && bskyText?.trim()) {
+    const postUrl = `https://jim-greco.com/${post.type}s/${post.pk}`
+    const linkUrl = bskyLinkTarget === "link" && link ? link : postUrl
+    console.log(`[Syndicate] Posting to Bluesky for slug: ${post.pk}, linkUrl: ${linkUrl}`)
+    const bsky = await postToBluesky(bskyText.trim(), linkUrl)
+    if (bsky) {
+      console.log(`[Syndicate] Success: ${bsky.uri}`)
+      post.bskyUri = bsky.uri
+      post.bskyCid = bsky.cid
     } else {
-      console.log(`[Syndicate] Skipping: type ${post.type} is not syndicated to Bluesky`)
+      console.log(`[Syndicate] Failed (returned null)`)
     }
   }
 

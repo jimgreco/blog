@@ -34,6 +34,8 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
   const [postType, setPostType] = useState<PostType>("note")
   const [publishedAt, setPublishedAt] = useState("")
   const [published, setPublished] = useState(true)
+  const [bskyText, setBskyText] = useState("")
+  const [bskyLinkTarget, setBskyLinkTarget] = useState<"post" | "link">("post")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
@@ -61,6 +63,8 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
     setPostType("note")
     setPublishedAt(nowLocalDatetime())
     setPublished(true)
+    setBskyText("")
+    setBskyLinkTarget("post")
     setError("")
     setMode("write")
   }
@@ -76,6 +80,8 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
     setPublishedAt(d.toISOString().slice(0, 16))
     setPublished(post.published)
+    setBskyText(post.bskyText ?? "")
+    setBskyLinkTarget(post.bskyLinkTarget ?? "post")
     setError("")
     setMode("write")
   }
@@ -84,6 +90,8 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
     setEditing(null)
     setIsNew(false)
     setLink("")
+    setBskyText("")
+    setBskyLinkTarget("post")
     setError("")
   }
 
@@ -102,6 +110,8 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
         type: postType,
         publishedAt: new Date(publishedAt).toISOString(),
         published,
+        bskyText: bskyText,
+        bskyLinkTarget: bskyText.trim() ? bskyLinkTarget : undefined,
       }
 
       if (isNew) {
@@ -162,6 +172,9 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
     router.refresh()
   }
 
+  const bskyCharCount = bskyText.length
+  const bskyOverLimit = bskyCharCount > 300
+
   return (
     <div className="admin-wrapper">
       <div className="admin-top">
@@ -196,6 +209,9 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
                   {formatDate(post.publishedAt)}
                   {!post.published && (
                     <span className="draft-badge"> · Draft</span>
+                  )}
+                  {post.bskyUri && (
+                    <span className="bsky-badge"> · Bluesky</span>
                   )}
                 </p>
               </div>
@@ -315,6 +331,48 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
               />
               Published
             </label>
+          </div>
+
+          <div className="form-group">
+            <div className="bsky-label-row">
+              <label htmlFor="bskyText">Bluesky post <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(leave blank to skip / remove)</span></label>
+              <span className={`bsky-char-count ${bskyOverLimit ? "bsky-char-over" : ""}`}>
+                {bskyCharCount}/300
+              </span>
+            </div>
+            <textarea
+              id="bskyText"
+              className="form-textarea bsky-textarea"
+              value={bskyText}
+              onChange={(e) => setBskyText(e.target.value)}
+              placeholder="Text for Bluesky post… (a link will be appended automatically)"
+            />
+            {bskyText.trim() && (
+              <div className="bsky-link-target">
+                <span className="bsky-link-target-label">Link to:</span>
+                <label className="bsky-radio-label">
+                  <input
+                    type="radio"
+                    name="bskyLinkTarget"
+                    value="post"
+                    checked={bskyLinkTarget === "post"}
+                    onChange={() => setBskyLinkTarget("post")}
+                  />
+                  Post URL
+                </label>
+                <label className={`bsky-radio-label ${!link.trim() ? "bsky-radio-disabled" : ""}`}>
+                  <input
+                    type="radio"
+                    name="bskyLinkTarget"
+                    value="link"
+                    checked={bskyLinkTarget === "link"}
+                    onChange={() => setBskyLinkTarget("link")}
+                    disabled={!link.trim()}
+                  />
+                  External URL{!link.trim() && " (none set)"}
+                </label>
+              </div>
+            )}
           </div>
 
           {error && <p className="editor-error">{error}</p>}

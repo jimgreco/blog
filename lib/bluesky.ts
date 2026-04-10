@@ -31,34 +31,30 @@ function stripMarkdown(body: string): string {
     .trim()
 }
 
-async function prepareRichText(body: string, slug: string, type: string, externalLink?: string) {
+async function prepareRichText(text: string, linkUrl: string) {
   const _agent = await getAgent()
-  let plainText = stripMarkdown(body)
-  
-  // If there's an external link (like for a note/essay), append it if not already in text
-  if (externalLink && !plainText.includes(externalLink)) {
-    plainText += `\n\n${externalLink}`
+
+  let fullText = text
+  if (!fullText.includes(linkUrl)) {
+    fullText += `\n\n${linkUrl}`
   }
 
-  let text = plainText
+  let finalText = fullText
   const MAX_CHARS = 300
-  
-  if (plainText.length > MAX_CHARS) {
-    const url = `https://jim-greco.com/${type}s/${slug}`
-    // Truncate to make room for ellipsis and URL (~30-40 chars for URL)
-    // We want some buffer. 250 seems safe.
-    text = plainText.slice(0, 240).trimEnd() + "... " + url
+
+  if (fullText.length > MAX_CHARS) {
+    finalText = text.slice(0, 240).trimEnd() + `... ${linkUrl}`
   }
 
-  const rt = new RichText({ text })
+  const rt = new RichText({ text: finalText })
   await rt.detectFacets(_agent)
   return rt
 }
 
-export async function postToBluesky(_title: string, body: string, slug: string, type: string, externalLink?: string) {
+export async function postToBluesky(text: string, linkUrl: string) {
   try {
     const _agent = await getAgent()
-    const rt = await prepareRichText(body, slug, type, externalLink)
+    const rt = await prepareRichText(text, linkUrl)
 
     const res = await _agent.post({
       $type: "app.bsky.feed.post",
@@ -74,10 +70,10 @@ export async function postToBluesky(_title: string, body: string, slug: string, 
   }
 }
 
-export async function updateBlueskyPost(uri: string, cid: string, _title: string, body: string, slug: string, type: string, externalLink?: string) {
+export async function updateBlueskyPost(uri: string, cid: string, text: string, linkUrl: string) {
   try {
     const _agent = await getAgent()
-    const rt = await prepareRichText(body, slug, type, externalLink)
+    const rt = await prepareRichText(text, linkUrl)
 
     const uriParts = uri.replace("at://", "").split("/")
     const repo = uriParts[0]
