@@ -145,36 +145,44 @@ export async function postToBluesky(text: string, linkUrl: string) {
 export async function updateBlueskyPost(uri: string, _cid: string, text: string, linkUrl: string) {
   try {
     const _agent = await getAgent()
-    console.log(`[Bsky] updateBlueskyPost called — uri: ${uri}, linkUrl: ${linkUrl}`)
+    console.log(`[Bsky] updateBlueskyPost — uri: ${uri}, linkUrl: ${linkUrl}`)
 
     const [rt, card] = await Promise.all([
       prepareRichText(text),
       fetchLinkCard(linkUrl, _agent),
     ])
+    console.log(`[Bsky] richtext: "${rt.text.slice(0, 80)}…", card: ${card ? card.title : "none"}`)
 
-    console.log(`[Bsky] richtext length: ${rt.text.length}, card: ${card ? "yes" : "no"}`)
-
-    // Delete old post then re-create; putRecord has auth/CID edge cases
-    try {
-      await _agent.deletePost(uri)
-      console.log(`[Bsky] deleted old post: ${uri}`)
-    } catch (e) {
-      console.warn(`[Bsky] could not delete old post (may already be gone):`, e)
-    }
+    const uriParts = uri.replace("at://", "").split("/")
+    const repo = uriParts[0]
+    const collection = uriParts[1]
+    const rkey = uriParts[2]
+    console.log(`[Bsky] putRecord repo=${repo} collection=${collection} rkey=${rkey}`)
 
     const record: any = {
       $type: "app.bsky.feed.post",
       text: rt.text,
-      facets: rt.facets,
       createdAt: new Date().toISOString(),
     }
+    if (rt.facets?.length) record.facets = rt.facets
     if (card) record.embed = { $type: "app.bsky.embed.external", external: card }
 
-    const res = await _agent.post(record)
-    console.log(`[Bsky] re-posted successfully: ${res.uri}`)
-    return { uri: res.uri, cid: res.cid }
-  } catch (err) {
-    console.error("[Bsky] updateBlueskyPost failed:", err)
+    // Preserve original createdAt
+    try {
+      const orig = await _agent.com.atproto.repo.getRecord({ repo, collection, rkey })
+      if (typeof (orig.data.value as any)?.createdAt === "string") {
+        record.createdAt = (orig.data.value as any).createdAt
+        console.log(`[Bsky] preserved createdAt: ${record.createdAt}`)
+      }
+    } catch (e: any) {
+      console.warn(`[Bsky] getRecord failed (${e?.status ?? e?.message}), using now for createdAt`)
+    }
+
+    const res = await _agent.com.atproto.repo.putRecord({ repo, collection, rkey, record })
+    console.log(`[Bsky] putRecord success: ${res.data.uri}`)
+    return { uri: res.data.uri, cid: res.data.cid }
+  } catch (err: any) {
+    console.error(`[Bsky] updateBlueskyPost FAILED — status=${err?.status} message=${err?.message}`, err)
     return null
   }
 }
