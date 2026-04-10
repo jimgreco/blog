@@ -27,6 +27,8 @@ export async function PUT(req: NextRequest, { params }: Context) {
 
   const updates: any = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
 
+  console.log(`[PUT /${params.slug}] published=${published} bskyText=${JSON.stringify(bskyText)} existingBskyUri=${existing.bskyUri ?? "none"}`)
+
   if (published && bskyText?.trim()) {
     const postType = type ?? existing.type
     const postUrl = `https://jim-greco.com/${postType}s/${params.slug}`
