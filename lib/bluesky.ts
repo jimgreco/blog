@@ -155,13 +155,14 @@ export async function updateBlueskyPost(uri: string, cid: string, text: string, 
     const collection = uriParts[1]
     const rkey = uriParts[2]
 
-    // Fetch original record to keep createdAt
+    // Fetch original record to keep createdAt and get live CID for the swap
     const existing = await _agent.com.atproto.repo.getRecord({ repo, collection, rkey })
 
     let createdAt = new Date().toISOString()
     if (existing?.data?.value && typeof (existing.data.value as any).createdAt === "string") {
       createdAt = (existing.data.value as any).createdAt
     }
+    const liveCid = existing?.data?.cid as string | undefined
 
     const record: any = {
       $type: "app.bsky.feed.post",
@@ -178,7 +179,7 @@ export async function updateBlueskyPost(uri: string, cid: string, text: string, 
       repo,
       collection,
       rkey,
-      swapRecord: cid,
+      swapRecord: liveCid,
       record,
     })
 
