@@ -10,10 +10,16 @@ interface Context {
   params: { slug: string }
 }
 
+// Publication changes must take effect on the API immediately as well as pages.
+export const dynamic = "force-dynamic"
+
 export async function GET(_req: NextRequest, { params }: Context) {
   const post = await getPost(params.slug)
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  return NextResponse.json(post)
+  const headers = { "Cache-Control": "no-store" }
+  if (!post || post.published !== true) {
+    return NextResponse.json({ error: "Not found" }, { status: 404, headers })
+  }
+  return NextResponse.json(post, { headers })
 }
 
 export async function PUT(req: NextRequest, { params }: Context) {

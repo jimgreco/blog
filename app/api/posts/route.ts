@@ -7,9 +7,11 @@ import { slugify } from "@/lib/utils"
 import { postToBluesky } from "@/lib/bluesky"
 import { postToMastodon } from "@/lib/mastodon"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const posts = await getPublishedPosts()
-  return NextResponse.json(posts)
+  return NextResponse.json(posts, { headers: { "Cache-Control": "no-store" } })
 }
 
 export async function POST(req: NextRequest) {

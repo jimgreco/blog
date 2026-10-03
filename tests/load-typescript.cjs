@@ -1,0 +1,26 @@
+const fs = require("node:fs")
+const path = require("node:path")
+const vm = require("node:vm")
+const ts = require("typescript")
+
+// Load production modules with explicitly stubbed I/O. No database, login, or
+// social-provider requests are allowed from these regression tests.
+module.exports = function loadTypeScript(relativePath, dependencies = {}) {
+  const filename = path.resolve(__dirname, "..", relativePath)
+  const code = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    fileName: filename,
+  }).outputText
+  const module = { exports: {} }
+  const sandbox = {
+    module, exports: module.exports, Buffer, URL, Response, AbortSignal,
+    setTimeout, clearTimeout, console,
+    require(name) {
+      if (Object.hasOwn(dependencies, name)) return dependencies[name]
+      if (name.startsWith("node:")) return require(name)
+      throw new Error(`Unexpected dependency: ${name}`)
+    },
+  }
+  vm.runInNewContext(code, sandbox, { filename })
+  return module.exports
+}
