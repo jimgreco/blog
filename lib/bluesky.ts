@@ -1,4 +1,5 @@
 import { BskyAgent, RichText } from "@atproto/api"
+import { fetchPublicPreview } from "./public-fetch"
 
 let agent: BskyAgent | null = null
 
@@ -58,13 +59,8 @@ function extractMeta(html: string, attr: "property" | "name", value: string): st
 async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
   if (!url) return null
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; BlogBot/1.0)" },
-      signal: AbortSignal.timeout(8000),
-    })
-    if (!res.ok) return null
-
-    const html = await res.text()
+    const res = await fetchPublicPreview(url, 1024 * 1024, ["text/html", "application/xhtml+xml"])
+    const html = res.body.toString("utf8")
 
     const title =
       extractMeta(html, "property", "og:title") ||
@@ -85,13 +81,10 @@ async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
     let thumb: any = undefined
     if (imageUrl) {
       try {
-        const imgRes = await fetch(imageUrl, { signal: AbortSignal.timeout(8000) })
-        if (imgRes.ok) {
-          const mimeType = imgRes.headers.get("content-type")?.split(";")[0] ?? "image/jpeg"
-          const buffer = await imgRes.arrayBuffer()
-          const uploaded = await _agent.uploadBlob(new Uint8Array(buffer), { encoding: mimeType })
-          thumb = uploaded.data.blob
-        }
+        const imgRes = await fetchPublicPreview(new URL(imageUrl, res.url).href, 1_000_000,
+          ["image/jpeg", "image/png", "image/webp", "image/gif"])
+        const uploaded = await _agent.uploadBlob(new Uint8Array(imgRes.body), { encoding: imgRes.contentType })
+        thumb = uploaded.data.blob
       } catch (e) {
         console.error("[Bsky] Thumbnail upload failed:", e)
       }
