@@ -6,6 +6,7 @@ const nextConfig = {
   // All of these are server-only variables — none appear in client components,
   // so they are NOT included in client-side JS bundles.
   env: {
+    APP_BUILD_SHA: process.env.AWS_COMMIT_ID || process.env.APP_BUILD_SHA || "unknown",
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

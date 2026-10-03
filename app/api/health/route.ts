@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic"
 export async function GET() {
   return NextResponse.json({
     ok: true,
+    build: process.env.APP_BUILD_SHA || "unknown",
     env: {
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
       hasGoogleId: !!process.env.GOOGLE_CLIENT_ID,
