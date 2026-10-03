@@ -10,14 +10,15 @@ export const dynamic = "force-dynamic"
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: { type?: string; edit?: string }
+  searchParams: Promise<{ type?: string; edit?: string }>
 }) {
   const session = await getServerSession(authOptions)
   if (!session) redirect("/api/auth/signin")
 
   const posts = await getAllPosts()
-  const defaultType = (searchParams.type as PostType) || undefined
-  const defaultSlug = searchParams.edit || undefined
+  const query = await searchParams
+  const defaultType = (query.type as PostType) || undefined
+  const defaultSlug = query.edit || undefined
 
   return <AdminClient initialPosts={posts} defaultType={defaultType} defaultSlug={defaultSlug} />
 }

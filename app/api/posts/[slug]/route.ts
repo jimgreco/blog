@@ -7,14 +7,15 @@ import { postToBluesky, updateBlueskyPost, deleteBlueskyPost } from "@/lib/blues
 import { postToMastodon, updateMastodonPost, deleteMastodonPost } from "@/lib/mastodon"
 
 interface Context {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // Publication changes must take effect on the API immediately as well as pages.
 export const dynamic = "force-dynamic"
 
 export async function GET(_req: NextRequest, { params }: Context) {
-  const post = await getPost(params.slug)
+  const { slug } = await params
+  const post = await getPost(slug)
   const headers = { "Cache-Control": "no-store" }
   if (!post || post.published !== true) {
     return NextResponse.json({ error: "Not found" }, { status: 404, headers })
@@ -23,22 +24,23 @@ export async function GET(_req: NextRequest, { params }: Context) {
 }
 
 export async function PUT(req: NextRequest, { params }: Context) {
+  const { slug } = await params
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget } = await req.json()
-  const existing = await getPost(params.slug)
+  const existing = await getPost(slug)
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   const updates: any = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
 
-  console.log(`[PUT /${params.slug}] published=${published} bskyText=${JSON.stringify(bskyText)} existingBskyUri=${existing.bskyUri ?? "none"}`)
+  console.log(`[PUT /${slug}] published=${published} bskyText=${JSON.stringify(bskyText)} existingBskyUri=${existing.bskyUri ?? "none"}`)
 
   if (published) {
     const postType = type ?? existing.type
-    const postUrl = `https://jim-greco.com/${postType}s/${params.slug}`
+    const postUrl = `https://jim-greco.com/${postType}s/${slug}`
     let linkUrl: string | undefined = bskyLinkTarget === "link" && link ? link : postUrl
     if (bskyLinkTarget === "none") linkUrl = undefined
 
@@ -71,13 +73,13 @@ export async function PUT(req: NextRequest, { params }: Context) {
       const mastoBody = bskyText?.trim() || body
       if (existing.mastodonId) {
         console.log(`[Syndicate-PUT:Masto] Updating existing: ${existing.mastodonId}`)
-        const masto = await updateMastodonPost(existing.mastodonId, title, mastoBody, params.slug, postType, linkUrl)
+        const masto = await updateMastodonPost(existing.mastodonId, title, mastoBody, slug, postType, linkUrl)
         if (masto) {
           updates.mastodonUri = masto.uri
           updates.mastodonId = masto.id
         }
       } else {
-        const masto = await postToMastodon(title, mastoBody, params.slug, postType, linkUrl)
+        const masto = await postToMastodon(title, mastoBody, slug, postType, linkUrl)
         if (masto) {
           updates.mastodonUri = masto.uri
           updates.mastodonId = masto.id
@@ -98,25 +100,26 @@ export async function PUT(req: NextRequest, { params }: Context) {
     }
   }
 
-  await updatePost(params.slug, updates)
+  await updatePost(slug, updates)
   revalidatePath("/notes")
   revalidatePath("/essays")
   revalidatePath("/projects")
   revalidatePath("/links")
-  revalidatePath(`/notes/${params.slug}`)
-  revalidatePath(`/essays/${params.slug}`)
-  revalidatePath(`/projects/${params.slug}`)
-  revalidatePath(`/links/${params.slug}`)
+  revalidatePath(`/notes/${slug}`)
+  revalidatePath(`/essays/${slug}`)
+  revalidatePath(`/projects/${slug}`)
+  revalidatePath(`/links/${slug}`)
   return NextResponse.json({ success: true })
 }
 
 export async function DELETE(_req: NextRequest, { params }: Context) {
+  const { slug } = await params
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const existing = await getPost(params.slug)
+  const existing = await getPost(slug)
   if (existing?.bskyUri) {
     await deleteBlueskyPost(existing.bskyUri)
   }
@@ -124,7 +127,7 @@ export async function DELETE(_req: NextRequest, { params }: Context) {
     await deleteMastodonPost(existing.mastodonId)
   }
 
-  await deletePost(params.slug)
+  await deletePost(slug)
   revalidatePath("/notes")
   revalidatePath("/essays")
   revalidatePath("/projects")

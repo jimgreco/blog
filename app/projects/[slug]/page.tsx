@@ -12,18 +12,20 @@ import { getBlueskyStats, getPublicPostUrl } from "@/lib/bluesky"
 export const dynamic = "force-dynamic"
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPost(params.slug)
+  const { slug } = await params
+  const post = await getPost(slug)
   if (!post || !post.published) return {}
   return { title: `${post.title} — Jim Greco` }
 }
 
 export default async function ProjectPage({ params }: Props) {
+  const { slug } = await params
   const [post, session] = await Promise.all([
-    getPost(params.slug),
+    getPost(slug),
     getServerSession(authOptions),
   ])
 
