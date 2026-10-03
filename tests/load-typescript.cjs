@@ -11,9 +11,9 @@ module.exports = function loadTypeScript(relativePath, dependencies = {}, global
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
     fileName: filename,
   }).outputText
-  const module = { exports: {} }
+  const loadedModule = { exports: {} }
   const sandbox = {
-    module, exports: module.exports, Buffer, URL, Response, AbortSignal, AbortController,
+    module: loadedModule, exports: loadedModule.exports, Buffer, URL, Response, AbortSignal, AbortController,
     setTimeout, clearTimeout, console, ...globals,
     require(name) {
       if (Object.hasOwn(dependencies, name)) return dependencies[name]
@@ -22,5 +22,5 @@ module.exports = function loadTypeScript(relativePath, dependencies = {}, global
     },
   }
   vm.runInNewContext(code, sandbox, { filename })
-  return module.exports
+  return loadedModule.exports
 }

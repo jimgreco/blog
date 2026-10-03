@@ -39,3 +39,29 @@ test("public list API does not cache a previously published record", async () =>
   posts = []
   assert.deepEqual(await (await route.GET()).json(), [])
 })
+
+test("saving a draft preserves its content without copying it to logs or syndicating it", async () => {
+  const draft = {
+    title: "SYNTHETIC_PRIVATE_TITLE", body: "SYNTHETIC_PRIVATE_BODY",
+    bskyText: "SYNTHETIC_PRIVATE_SOCIAL_TEXT", published: false, type: "note",
+  }
+  let saved
+  const logs = []
+  const deps = dependencies({
+    getPost: async () => ({ pk: "synthetic-draft", ...draft }),
+    updatePost: async (slug, updates) => { saved = { slug, updates } },
+  })
+  deps["next-auth"] = { getServerSession: async () => ({ user: { email: "owner@example.test" } }) }
+  deps["next/cache"] = { revalidatePath() {} }
+  // Social-provider stubs intentionally have no methods: any call would fail.
+  const route = load("app/api/posts/[slug]/route.ts", deps, {
+    console: Object.fromEntries(["log", "warn", "error"].map(level => [level, (...args) => logs.push(args)])),
+  })
+  const response = await route.PUT({ json: async () => draft }, { params: Promise.resolve({ slug: "synthetic-draft" }) })
+  assert.equal(response.status, 200)
+  assert.equal(saved.slug, "synthetic-draft")
+  assert.equal(saved.updates.body, draft.body)
+  assert.equal(saved.updates.bskyText, draft.bskyText)
+  const logged = JSON.stringify(logs)
+  for (const value of [draft.title, draft.body, draft.bskyText]) assert.ok(!logged.includes(value))
+})

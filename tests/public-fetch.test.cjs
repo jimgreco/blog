@@ -142,13 +142,13 @@ test("remote HTML cannot turn a social preview into a private-network image fetc
   const code = ts.transpileModule(fs.readFileSync(require("node:path").join(__dirname, "../lib/bluesky.ts"), "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText
-  const module = { exports: {} }
-  vm.runInNewContext(code, { module, exports: module.exports, URL, Uint8Array,
+  const loadedModule = { exports: {} }
+  vm.runInNewContext(code, { module: loadedModule, exports: loadedModule.exports, URL, Uint8Array,
     console: { log() {}, error() {} },
     process: { env: { BLUESKY_IDENTIFIER: "synthetic", BLUESKY_PASSWORD: "synthetic" } },
     require: (name) => name === "@atproto/api" ? { BskyAgent: Agent, RichText } : api,
   })
-  await module.exports.postToBluesky("Synthetic", "https://public.example/")
+  await loadedModule.exports.postToBluesky("Synthetic", "https://public.example/")
   assert.equal(api.calls.length, 1)
   assert.equal(uploads, 0)
   assert.equal(posted.embed.external.title, "Public page")

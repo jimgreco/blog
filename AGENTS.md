@@ -22,7 +22,10 @@
 - API/auth/storage: `app/api/`, `lib/auth.ts`, `lib/dynamo.ts`, `middleware.ts`.
 - Existing architecture notes: `CLAUDE.md`; read the relevant section for the task.
 - Check scripts in `package.json`: `npm run lint` and `npm run build` for code
-  changes; inspect the affected page for UI changes. There is no test script.
+  changes, plus `npm test` for synthetic regressions; inspect the affected page
+  for UI changes. `npm run test:production` exercises a production build with a
+  loopback-only DynamoDB fixture. Use the synthetic build environment documented
+  in `docs/MAINTENANCE-2026-10-03.md`; never point tests at real posts/providers.
 - Deployment configuration: `amplify.yml` and the sibling `../deploy/` project.
   Confirm the active hosting route before shipping; historical notes are not
   proof of current production state.

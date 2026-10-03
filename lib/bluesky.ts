@@ -1,4 +1,5 @@
 import { BskyAgent, RichText } from "@atproto/api"
+import type { AppBskyEmbedExternal, AppBskyFeedPost } from "@atproto/api"
 import { fetchPublicPreview } from "./public-fetch"
 
 let agent: BskyAgent | null = null
@@ -19,17 +20,6 @@ async function getAgent() {
   await agent.login({ identifier, password })
   console.log("[Bsky] Login successful")
   return agent
-}
-
-function stripMarkdown(body: string): string {
-  // Basic markdown removal while trying to maintain spacing
-  return body
-    .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "$1 ($2)") // Links: [text](url) -> text (url)
-    .replace(/[\*_]{1,2}([^\*_]+)[\*_]{1,2}/g, "$1") // Bold/Italic
-    .replace(/^#+\s+/gm, "") // Headers
-    .replace(/`{1,3}[^`]+`{1,3}/g, "") // Code blocks
-    .replace(/^>\s+/gm, "") // Blockquotes
-    .trim()
 }
 
 function decodeHtmlEntities(str: string): string {
@@ -78,7 +68,7 @@ async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
       extractMeta(html, "property", "og:image") ||
       extractMeta(html, "name", "twitter:image")
 
-    let thumb: any = undefined
+    let thumb: AppBskyEmbedExternal.External["thumb"] = undefined
     if (imageUrl) {
       try {
         const imgRes = await fetchPublicPreview(new URL(imageUrl, res.url).href, 1_000_000,
@@ -117,7 +107,7 @@ export async function postToBluesky(text: string, linkUrl?: string) {
       fetchLinkCard(linkUrl, _agent),
     ])
 
-    const record: any = {
+    const record: AppBskyFeedPost.Record = {
       $type: "app.bsky.feed.post",
       text: rt.text,
       facets: rt.facets,
@@ -153,7 +143,7 @@ export async function updateBlueskyPost(uri: string, _cid: string, text: string,
     const rkey = uriParts[2]
     console.log(`[Bsky] putRecord repo=${repo} collection=${collection} rkey=${rkey}`)
 
-    const record: any = {
+    const record: AppBskyFeedPost.Record = {
       $type: "app.bsky.feed.post",
       text: rt.text,
       createdAt: new Date().toISOString(),
@@ -164,19 +154,20 @@ export async function updateBlueskyPost(uri: string, _cid: string, text: string,
     // Preserve original createdAt
     try {
       const orig = await _agent.com.atproto.repo.getRecord({ repo, collection, rkey })
-      if (typeof (orig.data.value as any)?.createdAt === "string") {
-        record.createdAt = (orig.data.value as any).createdAt
+      const original = orig.data.value
+      if (original && typeof original === "object" && "createdAt" in original && typeof original.createdAt === "string") {
+        record.createdAt = original.createdAt
         console.log(`[Bsky] preserved createdAt: ${record.createdAt}`)
       }
-    } catch (e: any) {
-      console.warn(`[Bsky] getRecord failed (${e?.status ?? e?.message}), using now for createdAt`)
+    } catch {
+      console.warn("[Bsky] getRecord failed, using now for createdAt")
     }
 
     const res = await _agent.com.atproto.repo.putRecord({ repo, collection, rkey, record })
     console.log(`[Bsky] putRecord success: ${res.data.uri}`)
     return { uri: res.data.uri, cid: res.data.cid }
-  } catch (err: any) {
-    console.error(`[Bsky] updateBlueskyPost FAILED — status=${err?.status} message=${err?.message}`, err)
+  } catch (err) {
+    console.error("[Bsky] updateBlueskyPost failed:", err)
     return null
   }
 }

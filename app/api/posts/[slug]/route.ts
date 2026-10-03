@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getPost, updatePost, deletePost } from "@/lib/dynamo"
+import type { PostUpdates } from "@/lib/dynamo"
 import { postToBluesky, updateBlueskyPost, deleteBlueskyPost } from "@/lib/bluesky"
 import { postToMastodon, updateMastodonPost, deleteMastodonPost } from "@/lib/mastodon"
 
@@ -34,9 +35,7 @@ export async function PUT(req: NextRequest, { params }: Context) {
   const existing = await getPost(slug)
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  const updates: any = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
-
-  console.log(`[PUT /${slug}] published=${published} bskyText=${JSON.stringify(bskyText)} existingBskyUri=${existing.bskyUri ?? "none"}`)
+  const updates: PostUpdates = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
 
   if (published) {
     const postType = type ?? existing.type

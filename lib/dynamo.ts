@@ -47,6 +47,12 @@ export interface Post {
   mastodonId?: string
 }
 
+// Clearing a syndicated post persists null IDs, matching existing update behavior.
+type SyndicationField = "bskyUri" | "bskyCid" | "mastodonUri" | "mastodonId"
+export type PostUpdates = Partial<Omit<Post, "pk" | SyndicationField>> & {
+  [Field in SyndicationField]?: string | null
+}
+
 export async function getPostsByType(type: PostType): Promise<Post[]> {
   const result = await db.send(
     new ScanCommand({
@@ -123,7 +129,7 @@ export async function createPost(post: Post): Promise<void> {
 
 export async function updatePost(
   slug: string,
-  updates: Partial<Omit<Post, "pk">>
+  updates: PostUpdates
 ): Promise<void> {
   const entries = Object.entries(updates).filter(([, v]) => v !== undefined)
   const updateExpression =
