@@ -12,8 +12,8 @@ function getCredentials() {
 
 function stripMarkdown(body: string): string {
   return body
-    .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "$1 ($2)") // Links: [text](url) -> text (url)
-    .replace(/[\*_]{1,2}([^\*_]+)[\*_]{1,2}/g, "$1") // Bold/Italic
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)") // Links: [text](url) -> text (url)
+    .replace(/[*_]{1,2}([^*_]+)[*_]{1,2}/g, "$1") // Bold/Italic
     .replace(/^#+\s+/gm, "") // Headers
     .replace(/`{1,3}[^`]+`{1,3}/g, "") // Code blocks
     .replace(/^>\s+/gm, "") // Blockquotes

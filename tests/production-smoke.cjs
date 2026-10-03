@@ -63,7 +63,9 @@ async function main() {
     let ready = false
     for (let attempt = 0; attempt < 80; attempt++) {
       if (child.exitCode !== null) throw new Error(`Synthetic app exited: ${log}`)
-      try { ready = (await fetch(base + "/api/health")).ok } catch {}
+      try { ready = (await fetch(base + "/api/health")).ok } catch {
+        // Connection refusal is expected while the synthetic server starts.
+      }
       if (ready) break
       await new Promise(resolve => setTimeout(resolve, 100))
     }
