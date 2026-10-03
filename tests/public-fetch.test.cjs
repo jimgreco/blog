@@ -35,7 +35,7 @@ function harness({ addresses = [{ address: "93.184.215.14", family: 4 }], respon
 test("preview rejects local, metadata, encoded, mapped, tunnel and reserved IPs before connecting", async () => {
   const api = harness()
   for (const host of ["localhost", "127.0.0.1", "2130706433", "0x7f000001", "10.0.0.1",
-    "169.254.169.254", "192.168.1.1", "100.64.0.1", "[::1]", "[::ffff:127.0.0.1]",
+    "169.254.169.254", "192.168.1.1", "192.88.99.1", "100.64.0.1", "[::1]", "[::ffff:127.0.0.1]",
     "[64:ff9b::a00:1]", "[2002:7f00:1::]", "[fc00::1]", "[2001:db8::1]"]) {
     const current = host === "localhost" ? harness({ addresses: [{ address: "127.0.0.1", family: 4 }] }) : api
     await assert.rejects(current.fetchPublicPreview(`http://${host}/`, 100, ["text/html"]))
@@ -50,6 +50,34 @@ test("preview rejects mixed public/private DNS answers, credentials, schemes and
     await assert.rejects(api.fetchPublicPreview(url, 100, ["text/html"]))
   }
   assert.equal(api.calls.length, 0)
+})
+
+test("preview times out a stalled DNS lookup without connecting", async () => {
+  let requests = 0
+  const api = load("lib/public-fetch.ts", {
+    "node:dns/promises": { lookup: () => new Promise(() => {}) },
+    "node:http": { request: () => { requests++ } },
+    "node:https": { request: () => { requests++ } },
+  }, { setTimeout: (callback) => setTimeout(callback, 10) })
+  await assert.rejects(api.fetchPublicPreview("https://public.example/", 100, ["text/html"]), /timed out/)
+  assert.equal(requests, 0)
+})
+
+test("preview total deadline aborts a stalled connection", async () => {
+  let signal
+  const request = (_url, options) => {
+    signal = options.signal
+    const req = new EventEmitter()
+    req.end = () => {}
+    return req
+  }
+  const api = load("lib/public-fetch.ts", {
+    "node:dns/promises": { lookup: async () => [{ address: "93.184.215.14", family: 4 }] },
+    "node:http": { request }, "node:https": { request },
+  }, { setTimeout: (callback) => setTimeout(callback, 10) })
+  await assert.rejects(api.fetchPublicPreview("https://public.example/", 100, ["text/html"]), /timed out/)
+  assert.equal(signal.aborted, true)
+  assert.equal(api.isPublicAddress("2606:4700::1111"), true)
 })
 
 test("preview pins the vetted DNS address while retaining original TLS/Host hostname", async () => {

@@ -5,7 +5,7 @@ const ts = require("typescript")
 
 // Load production modules with explicitly stubbed I/O. No database, login, or
 // social-provider requests are allowed from these regression tests.
-module.exports = function loadTypeScript(relativePath, dependencies = {}) {
+module.exports = function loadTypeScript(relativePath, dependencies = {}, globals = {}) {
   const filename = path.resolve(__dirname, "..", relativePath)
   const code = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
@@ -14,7 +14,7 @@ module.exports = function loadTypeScript(relativePath, dependencies = {}) {
   const module = { exports: {} }
   const sandbox = {
     module, exports: module.exports, Buffer, URL, Response, AbortSignal, AbortController,
-    setTimeout, clearTimeout, console,
+    setTimeout, clearTimeout, console, ...globals,
     require(name) {
       if (Object.hasOwn(dependencies, name)) return dependencies[name]
       if (name.startsWith("node:")) return require(name)
