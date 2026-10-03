@@ -7,6 +7,8 @@ import type { PostUpdates } from "@/lib/dynamo"
 import { postToBluesky, updateBlueskyPost, deleteBlueskyPost } from "@/lib/bluesky"
 import { postToMastodon, updateMastodonPost, deleteMastodonPost } from "@/lib/mastodon"
 
+import { mutationOriginError, readPostInput } from "@/lib/post-input"
+
 interface Context {
   params: Promise<{ slug: string }>
 }
@@ -31,7 +33,9 @@ export async function PUT(req: NextRequest, { params }: Context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget } = await req.json()
+  const result = await readPostInput(req)
+  if (result.error) return result.error
+  const { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget } = result.input
   const existing = await getPost(slug)
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -111,12 +115,15 @@ export async function PUT(req: NextRequest, { params }: Context) {
   return NextResponse.json({ success: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: Context) {
+export async function DELETE(req: NextRequest, { params }: Context) {
   const { slug } = await params
   const session = await getServerSession(authOptions)
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const originError = mutationOriginError(req)
+  if (originError) return originError
 
   const existing = await getPost(slug)
   if (existing?.bskyUri) {

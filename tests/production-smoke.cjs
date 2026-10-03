@@ -16,6 +16,8 @@ async function main() {
     body: "NEVER_PUBLIC_SYNTHETIC_BODY", published: false, publishedAt: "2026-01-01T12:00:00Z" })
   const marshal = item => Object.fromEntries(Object.entries(item).map(([key, value]) =>
     [key, typeof value === "boolean" ? { BOOL: value } : { S: value }]))
+  const unmarshal = item => Object.fromEntries(Object.entries(item).map(([key, value]) =>
+    [key, value.S ?? value.BOOL ?? null]))
   let dbCalls = 0
   const db = createServer(async (req, res) => {
     let body = ""
@@ -33,9 +35,23 @@ async function main() {
       const type = input.ExpressionAttributeValues?.[":type"]?.S
       if (type) result = result.filter(post => post.type === type)
       output = { Items: result.map(marshal) }
+    } else if (target.endsWith(".PutItem")) {
+      posts.push(unmarshal(input.Item))
+      output = {}
+    } else if (target.endsWith(".UpdateItem")) {
+      const post = posts.find(item => item.pk === input.Key.pk.S)
+      const values = unmarshal(input.ExpressionAttributeValues)
+      for (const [alias, name] of Object.entries(input.ExpressionAttributeNames)) {
+        post[name] = values[alias.replace("#k", ":v")]
+      }
+      output = {}
+    } else if (target.endsWith(".DeleteItem")) {
+      const index = posts.findIndex(item => item.pk === input.Key.pk.S)
+      if (index >= 0) posts.splice(index, 1)
+      output = {}
     } else {
       res.writeHead(400)
-      res.end("Unexpected write to fixture")
+      res.end("Unexpected operation on synthetic fixture")
       return
     }
     res.writeHead(200, { "content-type": "application/x-amz-json-1.0" })
@@ -89,6 +105,36 @@ async function main() {
       assert.equal(response.status, 401)
     }
     assert.equal((await fetch(base + "/api/posts", { method: "POST" })).status, 401)
+    const mutationHeaders = { ...owner, origin: "http://127.0.0.1:3107", "content-type": "application/json" }
+    const payload = { title: "Synthetic new draft", body: "SYNTHETIC_NEW_BODY", type: "note", published: false,
+      publishedAt: "2026-01-01T12:00:00.000Z", bskyText: "", bskyLinkTarget: "post" }
+    for (const [method, path] of [["POST", "/api/posts"], ["PUT", "/api/posts/synthetic-draft"], ["DELETE", "/api/posts/synthetic-draft"]]) {
+      for (const origin of [undefined, "https://evil.example.test"]) {
+        const before = dbCalls
+        const headers = { ...owner, "content-type": "application/json", ...(origin ? { origin } : {}) }
+        const response = await fetch(base + path, { method, headers, ...(method !== "DELETE" ? { body: JSON.stringify(payload) } : {}) })
+        assert.equal(response.status, 403)
+        assert.equal(dbCalls, before, "rejected origins never reach persistence")
+      }
+    }
+    for (const [body, status] of [["{invalid", 400], [JSON.stringify({ ...payload, published: "true" }), 400],
+      [JSON.stringify({ ...payload, body: "x".repeat(256 * 1024) }), 413]]) {
+      const before = dbCalls
+      const response = await fetch(base + "/api/posts", { method: "POST", headers: mutationHeaders, body })
+      assert.equal(response.status, status)
+      assert.equal(dbCalls, before)
+    }
+    const created = await fetch(base + "/api/posts", { method: "POST", headers: mutationHeaders, body: JSON.stringify(payload) })
+    assert.equal(created.status, 201)
+    const createdPost = await created.json()
+    const draftPath = `/api/posts/${createdPost.pk}`
+    assert.equal((await fetch(base + draftPath)).status, 404)
+    const edit = await fetch(base + draftPath, { method: "PUT", headers: mutationHeaders,
+      body: JSON.stringify({ ...payload, body: "SYNTHETIC_EDITED_BODY" }) })
+    assert.equal(edit.status, 200)
+    assert.equal(posts.find(item => item.pk === createdPost.pk).body, "SYNTHETIC_EDITED_BODY")
+    assert.equal((await fetch(base + draftPath, { method: "DELETE", headers: mutationHeaders })).status, 200)
+    assert.ok(!posts.some(item => item.pk === createdPost.pk))
     const anonymousAdmin = await fetch(base + "/admin", { redirect: "manual" })
     assert.ok([302, 307].includes(anonymousAdmin.status))
     const admin = await fetch(base + "/admin", { headers: owner })
@@ -107,7 +153,7 @@ async function main() {
     assert.equal(list.headers.get("cache-control"), "no-store")
     assert.ok((await list.json()).every(post => post.pk !== "synthetic-note" && post.pk !== "synthetic-draft"))
     assert.ok(dbCalls > 0)
-    console.log("PASS: production build, anonymous/owner/draft/unknown/public access, mutation auth, immediate unpublish, cache headers, 8 page routes; synthetic loopback database only")
+    console.log("PASS: production build, anonymous/owner/draft/unknown/public access, mutation auth/origin/body limits, draft create/edit/delete, immediate unpublish, cache headers, 8 page routes; synthetic loopback database only")
   } finally {
     if (child.exitCode === null) {
       const stopped = once(child, "exit")

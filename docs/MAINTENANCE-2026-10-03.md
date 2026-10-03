@@ -25,8 +25,8 @@ undefined-JavaScript-name diagnostics.
 
 The lint findings were resolved with SDK record/blob types, an explicit nullable
 syndication-update type, safe narrowing of the previous post's timestamp, removal
-of an unused helper, and unambiguous test-module names. This is type cleanup, not
-request-schema validation. Equivalent regex escaping in Mastodon was simplified
+of an unused helper, and unambiguous test-module names. That initial change was type cleanup; the later request-validation work is
+documented below. Equivalent regex escaping in Mastodon was simplified
 for the core JavaScript rules; a startup retry catch now explains its empty body.
 
 Saving a draft no longer prints its social text to the server log. A synthetic
@@ -101,19 +101,86 @@ the checkout in the maintenance workspace's `evidence/blog/` directory.
   branches and does not disable this existing branch. A push to main can deploy;
   publication must be treated as a production action. No GitHub workflows were
   returned for Blog. Remote main remains `e379be2f88fc13b813e23c2d60bfa2bc33227095`.
-- Tracked `amplify.yml` runs `nvm use 20`, `npm ci`, then `npm run build`, publishing
-  `.next`. It does not run the separate regression/production smoke scripts.
-  The hosting owner must confirm the build Node version satisfies ESLint's engine
-  floor and review moving the pipeline/runtime to supported Node 22. That release
-  configuration was not changed here. No untracked Docker migration files were
-  copied from the user's original checkout.
+- The former `nvm use 20` build selection is now replaced **locally** with exact
+  Node **22.23.3** and bundled npm **10.9.9**, as detailed below. Read-only Amplify
+  `get-app` returned a null build-spec override, so the repository `amplify.yml`
+  is the applicable specification. The canonical www redirect points to
+  `https://jim-greco.com`. No live settings or build jobs were changed.
 - No push, Amplify build trigger, deployment, real Google login or social posting
   was performed. Authorized publication still needs exact remote-SHA/build-job
   verification and safe public health/privacy smoke. Full provider acceptance
   needs a separately approved real-account test.
 - Next 15 remains Maintenance LTS. Its documented two-year window from
   October 21, 2024 reaches October 21, 2026; plan Next 16 separately using the
-  [official support policy](https://nextjs.org/support-policy). A high-value
-  bounded app follow-up is explicit mutation-origin checks and strict input/body
-  bounds with synthetic tests. Revision/outbox and runtime-secret work remain
-  separate changes.
+  [official support policy](https://nextjs.org/support-policy). Mutation-origin and body validation are now implemented locally below.
+  Revision/outbox and runtime-secret work remain separate changes.
+
+## Supported build runtime and bounded mutations — follow-up
+
+`.nvmrc` selects **22.23.3**; package engines require that Node version and
+**npm 10.9.9**, with `packageManager` documenting the npm pin. `amplify.yml`
+installs/selects `.nvmrc`, prints versions, runs `npm ci --engine-strict --no-audit
+--no-fund`, then lint and all synthetic unit regressions before the existing
+production build. These changes are local and committed for review only.
+
+[Node's official release index](https://nodejs.org/dist/index.json) identifies
+22.23.3 as Jod LTS (2026-09-23), bundling npm 10.9.9. Both Darwin arm64 and Linux
+x64 archives were downloaded from nodejs.org and matched against the release's
+[official SHA-256 list](https://nodejs.org/dist/v22.23.3/SHASUMS256.txt).
+The [Amplify SSR documentation](https://docs.aws.amazon.com/amplify/latest/userguide/ssr-supported-features.html)
+supports Node 22 and states that the SSR compute runtime uses the build's Node
+**major** version. This establishes the supported major and local build target;
+AWS controls its deployed runtime patch. No Node 24/Next 16 migration is included.
+
+All three post mutations still authenticate first, then require the exact origin
+of server-configured `NEXTAUTH_URL`. Missing/opaque/foreign/sibling origins return
+403; invalid server configuration fails closed with 500. Host and forwarded-host
+headers cannot define the allowlist. Release review must confirm the canonical
+HTTPS URL is configured correctly; this task did not inspect secret values.
+Browser requests from the existing editor automatically carry Origin.
+
+POST/PUT accept only application/json, cap actual streamed UTF-8 bytes at
+**262,144 (256 KiB)** even without/with an understated Content-Length, reject
+malformed JSON/UTF-8, and validate the editor's existing complete payload before
+any database or syndication call. Titles must be nonblank and at most 512 code
+units; social text at most 10,000; optional HTTP(S) links at most 4,096 and without
+embedded credentials. Post type, publication boolean, social link target and
+real ISO UTC timestamp are checked; unknown fields are rejected. The body may be
+empty within the total byte cap. Missing publication/social fields cannot silently
+turn a partial edit into an unpublish/delete operation. Empty body/social text and
+optional/empty links remain accepted. There is no new schema dependency.
+
+Latest gates on **Node 22.23.3 / npm 10.9.9**, on both macOS arm64 and a disposable
+Linux x64 container:
+
+```sh
+node --version
+npm --version
+npm ci --engine-strict --no-audit --no-fund  # Mac also used --offline
+npm run lint
+npm test                                 # 23 passed on each platform
+npx --no-install tsc --noEmit
+# Same synthetic build variables listed above; no real account/table/provider.
+npm run build
+npm run test:production
+```
+
+The Linux build used the checksum-verified official Node binary on the pinned
+Python 3.12.15 Debian slim validation base; it is a compatibility test, not a
+replacement Blog deployment container or a claim to reproduce Amplify's complete
+build environment. Its smoke ran with external networking disabled, no host
+mounts/ports, dropped capabilities and a read-only root. The synthetic loopback
+DynamoDB fixture now verifies real HTTP draft create/edit/delete, origin rejection
+on all mutations, malformed/oversized body rejection before persistence, and all
+previous privacy/page checks. No provider messages are sent. Unit cases also cover
+exact byte boundaries, chunk cancellation, multibyte input, malformed dates,
+partial edits, forged fields and spoofed headers. Mac `npm ls --all` and whitespace
+review passed. No dependency versions changed in this follow-up.
+
+Evidence is in the enclosing maintenance workspace's `evidence/blog/node22/`
+(`SHASUMS256.txt`, `production-mac.log`, `linux-build.log`, `linux-production.log`,
+`npm-tree.txt`). Publication still requires explicit authorization: a main-branch
+push can deploy automatically. Verify the final remote SHA, Amplify build/runtime
+and safe public smoke after an authorized release; real account/provider testing
+remains separately gated. The local Node 20 compatibility gap is resolved, but
+no live Amplify build has been asserted.

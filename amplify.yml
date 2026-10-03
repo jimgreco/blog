@@ -3,8 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm use 20
-        - npm ci
+        - nvm install "$(cat .nvmrc)"
+        - nvm use "$(cat .nvmrc)"
+        - node --version
+        - npm --version
+        - npm ci --engine-strict --no-audit --no-fund
+        - npm run lint
+        - npm test
     build:
       commands:
         - env | grep -E "BLUESKY_|MASTODON_|NEXTAUTH_|GOOGLE_|ADMIN_|DYNAMO" >> .env.production

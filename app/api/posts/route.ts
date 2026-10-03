@@ -7,6 +7,8 @@ import { slugify } from "@/lib/utils"
 import { postToBluesky } from "@/lib/bluesky"
 import { postToMastodon } from "@/lib/mastodon"
 
+import { readPostInput } from "@/lib/post-input"
+
 export const dynamic = "force-dynamic"
 
 export async function GET() {
@@ -20,11 +22,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { title, body, link, type, publishedAt, published, bskyText, bskyLinkTarget } = await req.json()
-
-  if (!title?.trim()) {
-    return NextResponse.json({ error: "Title is required." }, { status: 400 })
-  }
+  const result = await readPostInput(req)
+  if (result.error) return result.error
+  const { title, body, link, type, publishedAt, published, bskyText, bskyLinkTarget } = result.input
 
   // Generate a unique slug
   let slug = slugify(title)

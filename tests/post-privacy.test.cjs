@@ -2,10 +2,11 @@ const assert = require("node:assert/strict")
 const test = require("node:test")
 const load = require("./load-typescript.cjs")
 
+const postInput = load("lib/post-input.ts", {}, { process: { env: { NEXTAUTH_URL: "https://blog.example.test" } } })
 const dependencies = (db) => ({
   "next/server": { NextResponse: { json: (body, options) => Response.json(body, options) } },
   "next/cache": {}, "next-auth": {}, "@/lib/auth": {},
-  "@/lib/dynamo": db, "@/lib/utils": {}, "@/lib/bluesky": {}, "@/lib/mastodon": {},
+  "@/lib/post-input": postInput, "@/lib/dynamo": db, "@/lib/utils": {}, "@/lib/bluesky": {}, "@/lib/mastodon": {},
 })
 
 test("public single-post API hides drafts and missing records identically", async () => {
@@ -44,6 +45,7 @@ test("saving a draft preserves its content without copying it to logs or syndica
   const draft = {
     title: "SYNTHETIC_PRIVATE_TITLE", body: "SYNTHETIC_PRIVATE_BODY",
     bskyText: "SYNTHETIC_PRIVATE_SOCIAL_TEXT", published: false, type: "note",
+    publishedAt: "2026-01-01T12:00:00.000Z", bskyLinkTarget: "post",
   }
   let saved
   const logs = []
@@ -57,7 +59,9 @@ test("saving a draft preserves its content without copying it to logs or syndica
   const route = load("app/api/posts/[slug]/route.ts", deps, {
     console: Object.fromEntries(["log", "warn", "error"].map(level => [level, (...args) => logs.push(args)])),
   })
-  const response = await route.PUT({ json: async () => draft }, { params: Promise.resolve({ slug: "synthetic-draft" }) })
+  const response = await route.PUT(new Request("https://blog.example.test/api/posts/synthetic-draft", {
+    method: "PUT", headers: { origin: "https://blog.example.test", "content-type": "application/json" }, body: JSON.stringify(draft),
+  }), { params: Promise.resolve({ slug: "synthetic-draft" }) })
   assert.equal(response.status, 200)
   assert.equal(saved.slug, "synthetic-draft")
   assert.equal(saved.updates.body, draft.body)

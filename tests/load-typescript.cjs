@@ -13,7 +13,7 @@ module.exports = function loadTypeScript(relativePath, dependencies = {}, global
   }).outputText
   const loadedModule = { exports: {} }
   const sandbox = {
-    module: loadedModule, exports: loadedModule.exports, Buffer, URL, Response, AbortSignal, AbortController,
+    module: loadedModule, exports: loadedModule.exports, Buffer, URL, Response, TextDecoder, AbortSignal, AbortController,
     setTimeout, clearTimeout, console, ...globals,
     require(name) {
       if (Object.hasOwn(dependencies, name)) return dependencies[name]
