@@ -6,7 +6,9 @@ const postInput = load("lib/post-input.ts", {}, { process: { env: { NEXTAUTH_URL
 const dependencies = (db) => ({
   "next/server": { NextResponse: { json: (body, options) => Response.json(body, options) } },
   "next/cache": {}, "next-auth": {}, "@/lib/auth": {},
-  "@/lib/post-input": postInput, "@/lib/dynamo": db, "@/lib/utils": {}, "@/lib/bluesky": {}, "@/lib/mastodon": {},
+  "@/lib/post-input": postInput, "@/lib/dynamo": { publicPost: p => p, ...db },
+  "@/lib/post-store": db, "@/lib/mutation-guard": { isOwner: async () => true, rateLimit: async () => null, revisionFrom: () => 0 },
+  "@/lib/post-response": { refreshPosts() {}, mutationFailure: error => { throw error } }, "@/lib/utils": {}, "@/lib/bluesky": {}, "@/lib/mastodon": {},
 })
 
 test("public single-post API hides drafts and missing records identically", async () => {
@@ -51,7 +53,7 @@ test("saving a draft preserves its content without copying it to logs or syndica
   const logs = []
   const deps = dependencies({
     getPost: async () => ({ pk: "synthetic-draft", ...draft }),
-    updatePost: async (slug, updates) => { saved = { slug, updates } },
+    savePost: async (slug, updates) => { saved = { slug, updates }; return { pk: slug, ...updates, revision: 1 } },
   })
   deps["next-auth"] = { getServerSession: async () => ({ user: { email: "owner@example.test" } }) }
   deps["next/cache"] = { revalidatePath() {} }

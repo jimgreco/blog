@@ -16,6 +16,7 @@ module.exports = function loadTypeScript(relativePath, dependencies = {}, global
     module: loadedModule, exports: loadedModule.exports, Buffer, URL, Response, TextDecoder, AbortSignal, AbortController,
     setTimeout, clearTimeout, console, ...globals,
     require(name) {
+      if (typeof dependencies === "function") return dependencies(name)
       if (Object.hasOwn(dependencies, name)) return dependencies[name]
       if (name.startsWith("node:")) return require(name)
       throw new Error(`Unexpected dependency: ${name}`)

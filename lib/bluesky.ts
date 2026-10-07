@@ -15,10 +15,9 @@ async function getAgent() {
     throw new Error("Bluesky credentials not configured")
   }
 
-  console.log(`[Bsky] Attempting login for identifier: ${identifier}`)
   agent = new BskyAgent({ service: "https://bsky.social" })
   await agent.login({ identifier, password })
-  console.log("[Bsky] Login successful")
+
   return agent
 }
 
@@ -46,10 +45,12 @@ function extractMeta(html: string, attr: "property" | "name", value: string): st
   return ""
 }
 
-async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
+export async function fetchLinkCard(url: string | undefined, _agent: BskyAgent, signal?: AbortSignal) {
   if (!url) return null
   try {
+    signal?.throwIfAborted()
     const res = await fetchPublicPreview(url, 1024 * 1024, ["text/html", "application/xhtml+xml"])
+    signal?.throwIfAborted()
     const html = res.body.toString("utf8")
 
     const title =
@@ -73,17 +74,17 @@ async function fetchLinkCard(url: string | undefined, _agent: BskyAgent) {
       try {
         const imgRes = await fetchPublicPreview(new URL(imageUrl, res.url).href, 1_000_000,
           ["image/jpeg", "image/png", "image/webp", "image/gif"])
+        signal?.throwIfAborted()
         const uploaded = await _agent.uploadBlob(new Uint8Array(imgRes.body), { encoding: imgRes.contentType })
         thumb = uploaded.data.blob
-      } catch (e) {
-        console.error("[Bsky] Thumbnail upload failed:", e)
+      } catch {
+        console.error("[Bsky] Thumbnail upload failed:")
       }
     }
 
-    console.log(`[Bsky] Link card: "${title}" — ${url}`)
     return { uri: url, title, description, thumb }
-  } catch (e) {
-    console.error("[Bsky] fetchLinkCard failed:", e)
+  } catch {
+    console.error("[Bsky] fetchLinkCard failed:")
     return null
   }
 }
@@ -120,8 +121,8 @@ export async function postToBluesky(text: string, linkUrl?: string) {
 
     const res = await _agent.post(record)
     return { uri: res.uri, cid: res.cid }
-  } catch (err) {
-    console.error("Failed to post to Bluesky:", err)
+  } catch {
+    console.error("Failed to post to Bluesky:")
     return null
   }
 }
@@ -129,19 +130,19 @@ export async function postToBluesky(text: string, linkUrl?: string) {
 export async function updateBlueskyPost(uri: string, _cid: string, text: string, linkUrl?: string) {
   try {
     const _agent = await getAgent()
-    console.log(`[Bsky] updateBlueskyPost — uri: ${uri}, linkUrl: ${linkUrl}`)
+
 
     const [rt, card] = await Promise.all([
       prepareRichText(text),
       fetchLinkCard(linkUrl, _agent),
     ])
-    console.log(`[Bsky] richtext: "${rt.text.slice(0, 80)}…", card: ${card ? card.title : "none"}`)
+
 
     const uriParts = uri.replace("at://", "").split("/")
     const repo = uriParts[0]
     const collection = uriParts[1]
     const rkey = uriParts[2]
-    console.log(`[Bsky] putRecord repo=${repo} collection=${collection} rkey=${rkey}`)
+
 
     const record: AppBskyFeedPost.Record = {
       $type: "app.bsky.feed.post",
@@ -157,17 +158,17 @@ export async function updateBlueskyPost(uri: string, _cid: string, text: string,
       const original = orig.data.value
       if (original && typeof original === "object" && "createdAt" in original && typeof original.createdAt === "string") {
         record.createdAt = original.createdAt
-        console.log(`[Bsky] preserved createdAt: ${record.createdAt}`)
+
       }
     } catch {
-      console.warn("[Bsky] getRecord failed, using now for createdAt")
+      // Legacy edit helper retains its fallback timestamp.
     }
 
     const res = await _agent.com.atproto.repo.putRecord({ repo, collection, rkey, record })
-    console.log(`[Bsky] putRecord success: ${res.data.uri}`)
+
     return { uri: res.data.uri, cid: res.data.cid }
-  } catch (err) {
-    console.error("[Bsky] updateBlueskyPost failed:", err)
+  } catch {
+    console.error("[Bsky] updateBlueskyPost failed:")
     return null
   }
 }
@@ -177,8 +178,8 @@ export async function deleteBlueskyPost(uri: string) {
     const _agent = await getAgent()
     await _agent.deletePost(uri)
     return true
-  } catch (err) {
-    console.error("Failed to delete Bluesky post:", err)
+  } catch {
+    console.error("Failed to delete Bluesky post:")
     return false
   }
 }
@@ -207,8 +208,8 @@ export async function getBlueskyStats(uris: string[]): Promise<Record<string, Bl
     })
 
     return stats
-  } catch (err) {
-    console.error("Failed to fetch Bluesky stats:", err)
+  } catch {
+    console.error("Failed to fetch Bluesky stats:")
     return {}
   }
 }

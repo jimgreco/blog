@@ -2,7 +2,7 @@ import type { Post } from "./dynamo"
 
 export const MAX_POST_BYTES = 256 * 1024
 
-type PostInput = Pick<Post, "title" | "body" | "type" | "publishedAt" | "published" | "link"> & {
+export type PostInput = Pick<Post, "title" | "body" | "type" | "publishedAt" | "published" | "link"> & {
   bskyText: string
   bskyLinkTarget: "post" | "link" | "none"
 }

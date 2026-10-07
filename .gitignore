@@ -16,3 +16,6 @@ out/
 npm-debug.log*
 .claude/
 tsconfig.tsbuildinfo
+
+# Generated server runtime configuration
+.env.production

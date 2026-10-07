@@ -1,142 +1,42 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { getPost, updatePost, deletePost } from "@/lib/dynamo"
-import type { PostUpdates } from "@/lib/dynamo"
-import { postToBluesky, updateBlueskyPost, deleteBlueskyPost } from "@/lib/bluesky"
-import { postToMastodon, updateMastodonPost, deleteMastodonPost } from "@/lib/mastodon"
-
+import { getPost, publicPost } from "@/lib/dynamo"
+import { savePost } from "@/lib/post-store"
 import { mutationOriginError, readPostInput } from "@/lib/post-input"
-
-interface Context {
-  params: Promise<{ slug: string }>
-}
-
-// Publication changes must take effect on the API immediately as well as pages.
+import { isOwner, rateLimit, revisionFrom } from "@/lib/mutation-guard"
+import { mutationFailure, refreshPosts } from "@/lib/post-response"
+interface Context { params: Promise<{ slug: string }> }
 export const dynamic = "force-dynamic"
-
 export async function GET(_req: NextRequest, { params }: Context) {
-  const { slug } = await params
-  const post = await getPost(slug)
+  const post = await getPost((await params).slug)
   const headers = { "Cache-Control": "no-store" }
-  if (!post || post.published !== true) {
-    return NextResponse.json({ error: "Not found" }, { status: 404, headers })
-  }
-  return NextResponse.json(post, { headers })
+  if (!post || post.published !== true) return NextResponse.json({ error: "Not found" }, { status: 404, headers })
+  return NextResponse.json(publicPost(post), { headers: { ...headers, ETag: `"${post.revision ?? 0}"` } })
 }
-
 export async function PUT(req: NextRequest, { params }: Context) {
-  const { slug } = await params
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
+  if (!await isOwner()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const result = await readPostInput(req)
   if (result.error) return result.error
-  const { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget } = result.input
-  const existing = await getPost(slug)
-  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
-
-  const updates: PostUpdates = { title, body, link, publishedAt, published, type, bskyText, bskyLinkTarget }
-
-  if (published) {
-    const postType = type ?? existing.type
-    const postUrl = `https://jim-greco.com/${postType}s/${slug}`
-    let linkUrl: string | undefined = bskyLinkTarget === "link" && link ? link : postUrl
-    if (bskyLinkTarget === "none") linkUrl = undefined
-
-    // 1. Bluesky (uses dedicated bskyText)
-    if (bskyText?.trim()) {
-      if (existing.bskyUri && existing.bskyCid) {
-        console.log(`[Syndicate-PUT:Bsky] Updating existing: ${existing.bskyUri}`)
-        const bsky = await updateBlueskyPost(existing.bskyUri, existing.bskyCid, bskyText.trim(), linkUrl)
-        if (bsky) {
-          updates.bskyUri = bsky.uri
-          updates.bskyCid = bsky.cid
-        }
-      } else {
-        const bsky = await postToBluesky(bskyText.trim(), linkUrl)
-        if (bsky) {
-          updates.bskyUri = bsky.uri
-          updates.bskyCid = bsky.cid
-        }
-      }
-    } else if (existing.bskyUri) {
-      // If bskyText cleared, delete the post
-      await deleteBlueskyPost(existing.bskyUri)
-      updates.bskyUri = null
-      updates.bskyCid = null
-    }
-
-    // 2. Mastodon (uses bskyText if available, else body)
-    const isSyndicatable = postType === "note" || postType === "essay"
-    if (isSyndicatable && process.env.MASTODON_INSTANCE_URL && process.env.MASTODON_ACCESS_TOKEN) {
-      const mastoBody = bskyText?.trim() || body
-      if (existing.mastodonId) {
-        console.log(`[Syndicate-PUT:Masto] Updating existing: ${existing.mastodonId}`)
-        const masto = await updateMastodonPost(existing.mastodonId, title, mastoBody, slug, postType, linkUrl)
-        if (masto) {
-          updates.mastodonUri = masto.uri
-          updates.mastodonId = masto.id
-        }
-      } else {
-        const masto = await postToMastodon(title, mastoBody, slug, postType, linkUrl)
-        if (masto) {
-          updates.mastodonUri = masto.uri
-          updates.mastodonId = masto.id
-        }
-      }
-    }
-  } else {
-    // Unpublishing - delete from all platforms
-    if (existing.bskyUri) {
-      await deleteBlueskyPost(existing.bskyUri)
-      updates.bskyUri = null
-      updates.bskyCid = null
-    }
-    if (existing.mastodonId) {
-      await deleteMastodonPost(existing.mastodonId)
-      updates.mastodonUri = null
-      updates.mastodonId = null
-    }
-  }
-
-  await updatePost(slug, updates)
-  revalidatePath("/notes")
-  revalidatePath("/essays")
-  revalidatePath("/projects")
-  revalidatePath("/links")
-  revalidatePath(`/notes/${slug}`)
-  revalidatePath(`/essays/${slug}`)
-  revalidatePath(`/projects/${slug}`)
-  revalidatePath(`/links/${slug}`)
-  return NextResponse.json({ success: true })
+  const revision = revisionFrom(req)
+  if (revision instanceof Response) return revision
+  try {
+    const limited = await rateLimit("mutations")
+    if (limited) return limited
+    const post = await savePost((await params).slug, result.input, revision)
+    refreshPosts(post.pk)
+    return NextResponse.json(post, { headers: { "Cache-Control": "no-store", ETag: `"${post.revision}"` } })
+  } catch (error) { return mutationFailure(error) }
 }
-
 export async function DELETE(req: NextRequest, { params }: Context) {
-  const { slug } = await params
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
+  if (!await isOwner()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const originError = mutationOriginError(req)
   if (originError) return originError
-
-  const existing = await getPost(slug)
-  if (existing?.bskyUri) {
-    await deleteBlueskyPost(existing.bskyUri)
-  }
-  if (existing?.mastodonId) {
-    await deleteMastodonPost(existing.mastodonId)
-  }
-
-  await deletePost(slug)
-  revalidatePath("/notes")
-  revalidatePath("/essays")
-  revalidatePath("/projects")
-  revalidatePath("/links")
-  return NextResponse.json({ success: true })
+  const revision = revisionFrom(req)
+  if (revision instanceof Response) return revision
+  try {
+    const limited = await rateLimit("mutations")
+    if (limited) return limited
+    const post = await savePost((await params).slug, null, revision)
+    refreshPosts(post.pk)
+    return NextResponse.json({ success: true }, { headers: { "Cache-Control": "no-store" } })
+  } catch (error) { return mutationFailure(error) }
 }

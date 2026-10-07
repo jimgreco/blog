@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import type { DeliverySummary } from "@/lib/social-outbox"
 import type { Post, PostType } from "@/lib/dynamo"
 import { formatDate } from "@/lib/utils"
 
@@ -23,6 +24,10 @@ function nowLocalDatetime() {
 
 export default function AdminClient({ initialPosts, defaultType, defaultSlug }: Props) {
   const router = useRouter()
+  const creationId = useRef<string | null>(null)
+  const [delivery, setDelivery] = useState<DeliverySummary[]>([])
+  const [deliveryMessage, setDeliveryMessage] = useState("")
+  const [dispatching, setDispatching] = useState(false)
   const [posts, setPosts] = useState<Post[]>(initialPosts)
   const [editing, setEditing] = useState<Post | null>(null)
   const [isNew, setIsNew] = useState(false)
@@ -55,6 +60,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function openNew() {
+    creationId.current = null
     setEditing(null)
     setIsNew(true)
     setTitle("")
@@ -87,6 +93,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
   }
 
   function cancel() {
+    creationId.current = null
     setEditing(null)
     setIsNew(false)
     setLink("")
@@ -117,7 +124,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
       if (isNew) {
         const res = await fetch("/api/posts", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Idempotency-Key": creationId.current ?? (creationId.current = crypto.randomUUID()) },
           body: JSON.stringify(data),
         })
         if (!res.ok) {
@@ -135,7 +142,7 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
       } else if (editing) {
         const res = await fetch(`/api/posts/${editing.pk}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "If-Match": `"${editing.revision ?? 0}"` },
           body: JSON.stringify(data),
         })
         if (!res.ok) {
@@ -143,9 +150,10 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
           setError(json.error ?? "Failed to update post.")
           return
         }
+        const saved: Post = await res.json()
         setPosts((prev) =>
           prev
-            .map((p) => (p.pk === editing.pk ? { ...p, ...data } : p))
+            .map((p) => (p.pk === editing.pk ? saved : p))
             .sort(
               (a, b) =>
                 new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
@@ -155,6 +163,9 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
 
       cancel()
       router.refresh()
+      void dispatchSocial()
+    } catch {
+      setError("Save could not be confirmed. Your text is still here; retry the same save.")
     } finally {
       setSaving(false)
     }
@@ -162,15 +173,48 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
 
   async function handleDelete(slug: string) {
     if (!confirm("Delete this post? This cannot be undone.")) return
-    const res = await fetch(`/api/posts/${slug}`, { method: "DELETE" })
+    const post = posts.find(p => p.pk === slug)
+    if (!post) return
+    let res: Response
+    try {
+      res = await fetch(`/api/posts/${slug}`, { method: "DELETE", headers: { "If-Match": `"${post.revision ?? 0}"` } })
+    } catch {
+      alert("Deletion could not be confirmed. Reload to check the post before retrying.")
+      return
+    }
     if (!res.ok) {
-      alert("Failed to delete post.")
+      const result = await res.json()
+      alert(result.error || "Failed to delete post.")
       return
     }
     setPosts((prev) => prev.filter((p) => p.pk !== slug))
     if (editing?.pk === slug) cancel()
     router.refresh()
+    void dispatchSocial()
   }
+
+  async function loadDelivery() {
+    try {
+      const response = await fetch("/api/social", { cache: "no-store" })
+      if (response.ok) setDelivery(await response.json())
+    } catch { setDeliveryMessage("Delivery status is unavailable. Your saved posts are safe.") }
+  }
+  async function dispatchSocial() {
+    setDispatching(true)
+    setDeliveryMessage("Saved. Processing queued social changes…")
+    try {
+      for (let batch = 0; batch < 2; batch++) {
+        const response = await fetch("/api/social", { method: "POST" })
+        const result = await response.json()
+        if (!response.ok) { setDeliveryMessage(result.error); break }
+        setDeliveryMessage("Saved. Social delivery status is shown below.")
+        if (!result.processed) break
+      }
+      await loadDelivery()
+    } catch { setDeliveryMessage("Saved. Social delivery could not be confirmed; check status before retrying.") }
+    finally { setDispatching(false) }
+  }
+  useEffect(() => { void loadDelivery() }, [])
 
   const bskyCharCount = bskyText.length
   const bskyOverLimit = bskyCharCount > 300
@@ -186,6 +230,20 @@ export default function AdminClient({ initialPosts, defaultType, defaultSlug }: 
         )}
       </div>
 
+      <section aria-label="Social delivery" className="form-group">
+        <p role="status">{deliveryMessage || "Posts save immediately. Social changes remain queued until delivered."}</p>
+        <button className="btn btn-sm" onClick={dispatchSocial} disabled={dispatching}>
+          {dispatching ? "Processing…" : "Process social queue"}
+        </button>{" "}
+        <button className="btn btn-sm" onClick={loadDelivery}>Refresh delivery status</button>
+        {delivery.filter(item => item.status !== "delivered").map(item => (
+          <p key={`${item.provider}:${item.slug}`}>
+            {item.slug} · {item.provider}: {item.status}
+            {item.status === "blocked" ? " — requires provider or configuration review; no automatic send." : ""}
+            {item.status === "retry" ? " — waiting to retry." : ""}
+          </p>
+        ))}
+      </section>
       {!editorOpen && (
         <ul className="admin-post-list">
           {posts.length === 0 && (

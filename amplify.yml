@@ -12,7 +12,7 @@ frontend:
         - npm test
     build:
       commands:
-        - env | grep -E "BLUESKY_|MASTODON_|NEXTAUTH_|GOOGLE_|ADMIN_|DYNAMO" >> .env.production
+        - node scripts/write-runtime-env.cjs
         - npm run build
   artifacts:
     baseDirectory: .next

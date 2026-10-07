@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "test": "node --test tests/*.test.cjs",
-    "test:production": "node tests/production-smoke.cjs"
+    "test:production": "node tests/production-smoke.cjs",
+    "test:integration": "node tests/outbox.integration.cjs"
   },
   "dependencies": {
     "@atproto/api": "^0.19.6",

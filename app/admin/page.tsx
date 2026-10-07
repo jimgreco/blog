@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+import { isOwner } from "@/lib/mutation-guard"
 import { getAllPosts } from "@/lib/dynamo"
 import type { PostType } from "@/lib/dynamo"
 import AdminClient from "./AdminClient"
@@ -12,8 +11,7 @@ export default async function AdminPage({
 }: {
   searchParams: Promise<{ type?: string; edit?: string }>
 }) {
-  const session = await getServerSession(authOptions)
-  if (!session) redirect("/api/auth/signin")
+  if (!await isOwner()) redirect("/api/auth/signin")
 
   const posts = await getAllPosts()
   const query = await searchParams

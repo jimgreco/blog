@@ -24,8 +24,16 @@
 - Check scripts in `package.json`: `npm run lint` and `npm run build` for code
   changes, plus `npm test` for synthetic regressions; inspect the affected page
   for UI changes. `npm run test:production` exercises a production build with a
-  loopback-only DynamoDB fixture. Use the synthetic build environment documented
+  loopback-only DynamoDB Local fixture (set `BLOG_TEST_DYNAMODB_ENDPOINT` to
+  an isolated port); `npm run test:integration` tests real transaction behavior. Use the synthetic build environment documented
   in `docs/MAINTENANCE-2026-10-03.md`; never point tests at real posts/providers.
 - Deployment configuration: `amplify.yml` and the sibling `../deploy/` project.
   Confirm the active hosting route before shipping; historical notes are not
   proof of current production state.
+
+## October 2026 reliability release
+
+- Read `docs/RELEASE-2026-10-07.md` before release, rollback, or social recovery.
+- New saves use revisions and transactional outbox/control records. Never roll
+  back to a reader that treats every table item as a post.
+- All tests must use synthetic accounts/providers and unique local tables.
