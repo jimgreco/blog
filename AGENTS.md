@@ -37,3 +37,7 @@
 - New saves use revisions and transactional outbox/control records. Never roll
   back to a reader that treats every table item as a post.
 - All tests must use synthetic accounts/providers and unique local tables.
+
+## Current takeover guide
+
+Read [the coding handoff](docs/AGENT_HANDOFF.md) for the verified source/release snapshot, setup, tests, active work and remaining gaps. Reconcile it with current Git state before editing; historical release receipts are not new authorization.
