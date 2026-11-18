@@ -9,18 +9,20 @@ const request = (value = draft, headers = {}) => new Request(origin + "/api/post
   method: "POST", headers: { origin, "content-type": "application/json", ...headers }, body: JSON.stringify(value),
 })
 
-function routes(session = {}) {
+function routes(session = {}, caller = session ? "browser" : null) {
   const calls = []
   const sideEffect = name => async (...args) => { calls.push([name, ...args]); return null }
   const deps = {
     "next/server": { NextResponse: { json: (body, options) => Response.json(body, options) } },
     "next/cache": { revalidatePath: sideEffect("revalidate") },
     "next-auth": { getServerSession: async () => session }, "@/lib/auth": {},
-    "@/lib/mutation-guard": { isOwner: async () => Boolean(session), rateLimit: async () => null, revisionFrom: () => 0, creationKey: () => "synthetic" },
+    "@/lib/mutation-guard": { isOwner: async () => Boolean(session), authorize: async () => caller, rateLimit: async () => null, revisionFrom: () => 0, creationKey: () => "synthetic" },
     "@/lib/post-store": { createPost: async (input) => { calls.push(["create", input]); return { ...input, pk: "synthetic-new", revision: 1 } }, savePost: async () => { calls.push(["delete"]); return { pk: "synthetic" } } },
     "@/lib/post-response": { refreshPosts: sideEffect("revalidate"), mutationFailure: error => { throw error } },
     "@/lib/post-input": input, "@/lib/utils": { slugify: () => "synthetic-new" },
-    "@/lib/dynamo": { getPost: sideEffect("get"), createPost: sideEffect("create"),
+    "@/lib/dynamo": { getPost: sideEffect("get"), getAllPosts: async () => { calls.push(["all"]); return [{ pk: "d", published: false, bskyText: "SYNTHETIC_SOCIAL" }] },
+      getPublishedPosts: async () => { calls.push(["published"]); return [] }, publicPost: post => Object.fromEntries(Object.entries(post).filter(([key]) => key !== "bskyText")),
+      createPost: sideEffect("create"),
       updatePost: sideEffect("update"), deletePost: sideEffect("delete") },
     "@/lib/bluesky": Object.fromEntries(["postToBluesky", "updateBlueskyPost", "deleteBlueskyPost"].map(name => [name, sideEffect(name)])),
     "@/lib/mastodon": Object.fromEntries(["postToMastodon", "updateMastodonPost", "deleteMastodonPost"].map(name => [name, sideEffect(name)])),
@@ -133,4 +135,30 @@ test("valid draft creation and deletion reach only the expected stubbed persiste
   assert.equal((await single.DELETE(request(), context)).status, 200)
   assert.equal(calls.filter(([name]) => name === "delete").length, 1)
   assert.ok(calls.every(([name]) => ["get", "create", "delete", "revalidate"].includes(name)))
+})
+
+test("app (bearer) callers save without a browser origin; unauthenticated callers cannot", async () => {
+  const noOrigin = () => { const req = request(); req.headers.delete("origin"); return req }
+  const app = routes(null, "app")
+  assert.equal((await app.create.POST(noOrigin())).status, 201)
+  assert.equal((await app.single.PUT(noOrigin(), context)).status, 200)
+  assert.equal((await app.single.DELETE(noOrigin(), context)).status, 200)
+  const anon = routes(null, null)
+  for (const action of [req => anon.create.POST(req), req => anon.single.PUT(req, context), req => anon.single.DELETE(req, context)]) {
+    assert.equal((await action(noOrigin())).status, 401)
+  }
+  assert.equal(anon.calls.length, 0)
+})
+
+test("draft listing requires the owner; the public listing stays published-only", async () => {
+  const get = (r, query = "") => r.create.GET(new Request(origin + "/api/posts" + query))
+  const anon = routes(null, null)
+  assert.equal((await get(anon, "?drafts=1")).status, 401)
+  assert.equal((await get(anon)).status, 200)
+  assert.deepEqual(anon.calls.map(([name]) => name), ["published"])
+  const app = routes(null, "app")
+  const owner = await get(app, "?drafts=1")
+  assert.equal(owner.status, 200)
+  assert.deepEqual(await owner.json(), [{ pk: "d", published: false, bskyText: "SYNTHETIC_SOCIAL", bskyLinkTarget: "post" }])
+  assert.deepEqual(app.calls.map(([name]) => name), ["all"])
 })

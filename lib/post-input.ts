@@ -22,8 +22,8 @@ export function mutationOriginError(req: Request): Response | null {
     ? null : failure("Same-origin request required.", 403)
 }
 
-export async function readPostInput(req: Request): Promise<InputResult> {
-  const originError = mutationOriginError(req)
+export async function readPostInput(req: Request, { checkOrigin = true } = {}): Promise<InputResult> {
+  const originError = checkOrigin ? mutationOriginError(req) : null
   if (originError) return { error: originError }
   if (req.headers.get("content-type")?.split(";", 1)[0].trim().toLowerCase() !== "application/json") {
     return { error: failure("Use application/json.", 415) }

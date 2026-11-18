@@ -1,12 +1,24 @@
 import { getServerSession } from "next-auth"
 import { PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb"
 import { authOptions } from "./auth"
+import { bearerToken, isOwnerToken } from "./app-token"
 import { db, TABLE } from "./dynamo"
 import { conditionalFailure } from "./post-store"
 
 export async function isOwner(): Promise<boolean> {
   const session = await getServerSession(authOptions)
   return Boolean(process.env.ADMIN_EMAIL && session?.user?.email === process.env.ADMIN_EMAIL)
+}
+export type Caller = "browser" | "app"
+// A request that sends an Authorization header is judged on that token alone and
+// never falls back to cookies. Browser (cookie) callers must also pass the
+// same-origin check; app callers carry no ambient credential, so CSRF does not apply.
+export async function authorize(req: Request): Promise<Caller | null> {
+  if (req.headers.has("authorization")) {
+    const token = bearerToken(req)
+    return token && await isOwnerToken(token) ? "app" : null
+  }
+  return await isOwner() ? "browser" : null
 }
 export function revisionFrom(req: Request): number | Response {
   const value = req.headers.get("if-match")

@@ -16,6 +16,9 @@
 | `lib/utils.ts` | `slugify()`, `formatDate()` |
 | `app/admin/AdminClient.tsx` | Client-side editor with write/preview tabs |
 | `middleware.ts` | Protects `/admin/*` via next-auth/middleware |
+| `lib/mutation-guard.ts` | `authorize(req)`: `"browser"` (cookie session, must pass the same-origin check) or `"app"` (bearer token, no origin check) |
+| `lib/app-token.ts` | Verifies the iPhone app's Google ID bearer token (owner only) |
+| `ios/` | Quick Post SwiftUI app (XcodeGen `project.yml`); see `ios/README.md` |
 | `amplify.yml` | Build config (Node 20, `npm ci`, `next build`) |
 
 ## Post types
@@ -30,6 +33,7 @@ NEXTAUTH_SECRET=          # openssl rand -base64 32
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ADMIN_EMAIL=
+GOOGLE_IOS_CLIENT_ID=     # iOS OAuth client id(s), comma-separated; enables the Quick Post app
 DYNAMODB_TABLE_NAME=BlogPosts
 AWS_REGION=us-east-1
 

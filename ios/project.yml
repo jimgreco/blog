@@ -1,0 +1,52 @@
+name: QuickPost
+options:
+  bundleIdPrefix: com.jimgreco
+  deploymentTarget:
+    iOS: "26.0"
+packages:
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: 7.1.0
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: V6JPQCD336
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  QuickPost:
+    type: application
+    platform: iOS
+    sources:
+      - path: QuickPost
+    dependencies:
+      - package: GoogleSignIn
+        product: GoogleSignIn
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jimgreco.quickpost
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: QuickPost/Info.plist
+        BLOG_BASE_URL: https://jim-greco.com
+        # The iOS OAuth client for this bundle id. The same id goes in the blog's
+        # GOOGLE_IOS_CLIENT_ID environment variable.
+        GOOGLE_CLIENT_ID: YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com
+        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.YOUR_GOOGLE_IOS_CLIENT_ID
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+    scheme:
+      testTargets:
+        - QuickPostTests
+  QuickPostTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: QuickPostTests
+    dependencies:
+      - target: QuickPost
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jimgreco.quickpost.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost"
+        BUNDLE_LOADER: "$(TEST_HOST)"
