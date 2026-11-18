@@ -52,7 +52,13 @@ npm run dev        # http://localhost:3000
 For local DynamoDB, set `DYNAMODB_ENDPOINT=http://localhost:8000` and run DynamoDB Local.
 
 ## Deployment
-Pushes to `main` auto-deploy via Amplify. No manual deploy step needed.
+Pushes to `main` auto-deploy the web app via Amplify. No manual deploy step needed.
+
+GitHub Actions follow the shared app standard (`jimgreco/consolidated-deploy`
+`docs/APP_STANDARD.md`) in its iOS-only form: `release.yml` (template without the
+server job), `verify.yml` (web checks + iOS tests), `codeql.yml`, `testflight.yml`
+and `verify-testflight.yml`. A push to `main` uploads Quick Post to TestFlight;
+see `ios/README.md`.
 
 ## Infrastructure notes
 - **DNS**: Cloudflare (proxied, orange cloud) with a Worker that proxies `jim-greco.com/*` and `www.jim-greco.com/*` → `main.d1k79dwq6c1dnq.amplifyapp.com`. This bypasses CloudFront alias validation which doesn't work with Cloudflare CNAME flattening.

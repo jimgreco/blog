@@ -39,7 +39,7 @@ final class BlogClient {
     }
 
     nonisolated static var configuredBaseURL: URL {
-        let value = Bundle.main.object(forInfoDictionaryKey: "BLOG_BASE_URL") as? String ?? ""
+        let value = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as? String ?? ""
         return URL(string: value) ?? URL(string: "https://jim-greco.com")!
     }
 

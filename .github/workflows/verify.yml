@@ -1,0 +1,138 @@
+name: Verify
+
+# Every check that gates a merge or a release. Called by release.yml on pull
+# requests, pushes to main and manual runs (checks show as `verify / <job>`).
+# No secrets: nothing here reaches production. The web app deploys through
+# Amplify (amplify.yml), not through release.yml.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --engine-strict --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Typecheck
+        run: npx --no-install tsc --noEmit
+
+      # Synthetic values from docs/MAINTENANCE-2026-10-03.md; nothing real is reachable.
+      - name: Production build
+        run: |
+          env -i PATH="$PATH" HOME="$HOME" NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 \
+            AWS_EC2_METADATA_DISABLED=true AWS_ACCESS_KEY_ID=synthetic \
+            AWS_SECRET_ACCESS_KEY=synthetic DYNAMODB_ENDPOINT=http://127.0.0.1:9 \
+            DYNAMODB_TABLE_NAME=SyntheticPosts DYNAMO_REGION=us-east-1 \
+            NEXTAUTH_URL=http://127.0.0.1:3107 \
+            NEXTAUTH_SECRET=synthetic-audit-session-key-not-for-production \
+            GOOGLE_CLIENT_ID=synthetic-client GOOGLE_CLIENT_SECRET=synthetic-secret \
+            ADMIN_EMAIL=owner@example.test npm run build
+
+  # iOS unit tests. No secrets: the build uses the project's placeholder
+  # settings. Release values are checked in testflight.yml.
+  ios-tests:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v5
+      with:
+        node-version: 22
+    - name: Select Xcode
+      run: |
+        set -euo pipefail
+        for path in /Applications/Xcode_26.2.app /Applications/Xcode_26.1.app /Applications/Xcode_26.0.app /Applications/Xcode_26.app /Applications/Xcode.app; do
+          if [ -d "$path" ]; then
+            sudo xcode-select -s "$path/Contents/Developer"
+            break
+          fi
+        done
+        xcodebuild -version
+    - name: Prepare iOS simulator
+      id: simulator
+      run: |
+        set -euo pipefail
+
+        simulator_sdk_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
+        echo "iPhoneSimulator SDK version: $simulator_sdk_version"
+        if ! xcrun simctl list runtimes | grep -q "iOS $simulator_sdk_version"; then
+          echo "Matching iOS simulator runtime is missing; downloading iOS platform."
+          sudo xcodebuild -downloadPlatform iOS
+        fi
+        export SIMULATOR_SDK_VERSION="$simulator_sdk_version"
+
+        runtime=$(xcrun simctl list runtimes --json | ruby -rjson -e '
+          def version_key(value)
+            value.to_s.scan(/\d+/).map(&:to_i)
+          end
+
+          runtimes = JSON.parse(STDIN.read).fetch("runtimes").select do |candidate|
+            candidate["isAvailable"] && candidate["platform"] == "iOS"
+          end
+          matching = runtimes.select do |candidate|
+            candidate["version"].to_s == ENV.fetch("SIMULATOR_SDK_VERSION")
+          end
+          selected = matching.max_by { |candidate| version_key(candidate["version"]) }
+          selected ||= runtimes.max_by { |candidate| version_key(candidate["version"]) }
+          abort("No available iOS simulator runtime found") unless selected
+          puts selected.fetch("identifier")
+        ')
+
+        device_type=$(xcrun simctl list devicetypes --json | ruby -rjson -e '
+          types = JSON.parse(STDIN.read).fetch("devicetypes").select do |candidate|
+            candidate["name"].to_s.include?("iPhone")
+          end
+          preferred = [
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-16",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-15"
+          ]
+          selected = preferred.map do |identifier|
+            types.find { |candidate| candidate["identifier"] == identifier }
+          end.compact.first
+          selected ||= types.reverse.find { |candidate| candidate["name"].to_s.include?("Pro") }
+          selected ||= types.last
+          abort("No iPhone simulator device type found") unless selected
+          puts selected.fetch("identifier")
+        ')
+
+        udid=$(xcrun simctl create "QuickPost CI" "$device_type" "$runtime")
+        xcrun simctl boot "$udid" || true
+        xcrun simctl bootstatus "$udid" -b
+        echo "destination=platform=iOS Simulator,id=$udid" >> "$GITHUB_OUTPUT"
+    - name: Run iOS unit tests
+      run: |
+        set -euo pipefail
+        xcodebuild \
+          -project ios/QuickPost.xcodeproj \
+          -scheme QuickPost \
+          -configuration Debug \
+          -sdk iphonesimulator \
+          -destination '${{ steps.simulator.outputs.destination }}' \
+          CODE_SIGNING_ALLOWED=NO \
+          test
