@@ -9,7 +9,7 @@ module.exports = function appFixture(stubs = {}, globals = {}) {
       if (Object.hasOwn(stubs, name)) return stubs[name]
       if (name.startsWith("@/")) return moduleAt(name.slice(2) + ".ts")
       if (name.startsWith(".")) return moduleAt(path.posix.normalize(path.posix.join(path.posix.dirname(filename), name)) + ".ts")
-      if (name.startsWith("node:") || name.startsWith("@aws-sdk/")) return require(name)
+      if (name.startsWith("node:") || name.startsWith("@aws-sdk/") || name === "google-auth-library") return require(name)
       throw new Error(`Unexpected dependency: ${name}`)
     }, { process, ...globals })
     modules.set(filename, exports)

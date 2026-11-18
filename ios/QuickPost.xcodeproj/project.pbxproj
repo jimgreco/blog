@@ -1,0 +1,484 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000915F67883930E0C640C3B /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F720EDBF39119DFA47EC21 /* SignInView.swift */; };
+		25245DA4BAAB1F8E1ED3E8C6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */; };
+		25AAFE862C12D7EBE4EA65F3 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDC4B1A115511BE8ABD9198 /* Models.swift */; };
+		70C400E5351CDA7DB32E905A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */; };
+		8324C058209A30D50FA40F11 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CD112F7E27CBA70D31270 /* PostListView.swift */; };
+		8CB35E2325F17118C921603D /* QuickPostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */; };
+		9541C50560B227A66C7ABB42 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */; };
+		A089CE35A3D003AD10C5927A /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE67493DAB95D1346363323 /* ComposeView.swift */; };
+		AE1C6612D1AFEED384A1FA73 /* DraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */; };
+		C26B35600A9D08C90F959D82 /* BlogClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551795778DF7F8F5E9A03CF6 /* BlogClient.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		400A08ACBC9B6F5B9F5CF03B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0376ECEDD858E53D79F8B454 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71A42847E58B555BB21EE497;
+			remoteInfo = QuickPost;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00F6216FE5E2EAEF6A61B8B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		20F720EDBF39119DFA47EC21 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		2DE67493DAB95D1346363323 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
+		3FDC4B1A115511BE8ABD9198 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftTests.swift; sourceTree = "<group>"; };
+		551795778DF7F8F5E9A03CF6 /* BlogClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogClient.swift; sourceTree = "<group>"; };
+		5F998794DFF362F3A66E0C6E /* QuickPost.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = QuickPost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPostApp.swift; sourceTree = "<group>"; };
+		D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickPostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E21CD112F7E27CBA70D31270 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		484625D2A54F129C06DD9BCE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9541C50560B227A66C7ABB42 /* GoogleSignIn in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AFBF9DBF6D9FCF0C77B1064E /* QuickPostTests */ = {
+			isa = PBXGroup;
+			children = (
+				51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */,
+			);
+			path = QuickPostTests;
+			sourceTree = "<group>";
+		};
+		B26E0221A9DA852F47EEEC11 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5F998794DFF362F3A66E0C6E /* QuickPost.app */,
+				D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8BAFAC70F9770D77355CD667 = {
+			isa = PBXGroup;
+			children = (
+				DC275A14D676D694CF5FC48C /* QuickPost */,
+				AFBF9DBF6D9FCF0C77B1064E /* QuickPostTests */,
+				B26E0221A9DA852F47EEEC11 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DC275A14D676D694CF5FC48C /* QuickPost */ = {
+			isa = PBXGroup;
+			children = (
+				01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */,
+				551795778DF7F8F5E9A03CF6 /* BlogClient.swift */,
+				2DE67493DAB95D1346363323 /* ComposeView.swift */,
+				00F6216FE5E2EAEF6A61B8B9 /* Info.plist */,
+				3FDC4B1A115511BE8ABD9198 /* Models.swift */,
+				E21CD112F7E27CBA70D31270 /* PostListView.swift */,
+				DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */,
+				A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */,
+				20F720EDBF39119DFA47EC21 /* SignInView.swift */,
+			);
+			path = QuickPost;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		71A42847E58B555BB21EE497 /* QuickPost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F50630260FE4AD0F8A077FDF /* Build configuration list for PBXNativeTarget "QuickPost" */;
+			buildPhases = (
+				6DC5D1005372D680A8E1C212 /* Sources */,
+				AB04118B238BFE681BCCB7A2 /* Resources */,
+				484625D2A54F129C06DD9BCE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuickPost;
+			packageProductDependencies = (
+				C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */,
+			);
+			productName = QuickPost;
+			productReference = 5F998794DFF362F3A66E0C6E /* QuickPost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DE8CCA30F507284BAD811D19 /* QuickPostTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E058F33249667E0E5B75245B /* Build configuration list for PBXNativeTarget "QuickPostTests" */;
+			buildPhases = (
+				7873814D0DCF13E92AF70349 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				894C947C8B867539AEC231D2 /* PBXTargetDependency */,
+			);
+			name = QuickPostTests;
+			packageProductDependencies = (
+			);
+			productName = QuickPostTests;
+			productReference = D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0376ECEDD858E53D79F8B454 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					71A42847E58B555BB21EE497 = {
+						DevelopmentTeam = V6JPQCD336;
+					};
+					DE8CCA30F507284BAD811D19 = {
+						DevelopmentTeam = V6JPQCD336;
+					};
+				};
+			};
+			buildConfigurationList = 441F20500DE84D8ED0C5CF08 /* Build configuration list for PBXProject "QuickPost" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8BAFAC70F9770D77355CD667;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B26E0221A9DA852F47EEEC11 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				71A42847E58B555BB21EE497 /* QuickPost */,
+				DE8CCA30F507284BAD811D19 /* QuickPostTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AB04118B238BFE681BCCB7A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70C400E5351CDA7DB32E905A /* Assets.xcassets in Resources */,
+				25245DA4BAAB1F8E1ED3E8C6 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6DC5D1005372D680A8E1C212 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C26B35600A9D08C90F959D82 /* BlogClient.swift in Sources */,
+				A089CE35A3D003AD10C5927A /* ComposeView.swift in Sources */,
+				25AAFE862C12D7EBE4EA65F3 /* Models.swift in Sources */,
+				8324C058209A30D50FA40F11 /* PostListView.swift in Sources */,
+				8CB35E2325F17118C921603D /* QuickPostApp.swift in Sources */,
+				000915F67883930E0C640C3B /* SignInView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7873814D0DCF13E92AF70349 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE1C6612D1AFEED384A1FA73 /* DraftTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		894C947C8B867539AEC231D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71A42847E58B555BB21EE497 /* QuickPost */;
+			targetProxy = 400A08ACBC9B6F5B9F5CF03B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FF891F14D9DD6A16D67C57FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				API_BASE_URL = "https://jim-greco.com";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
+				GENERATE_INFOPLIST_FILE = NO;
+				GOOGLE_CLIENT_ID = "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.YOUR_GOOGLE_IOS_CLIENT_ID;
+				INFOPLIST_FILE = QuickPost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost;
+				PROVISIONING_PROFILE_SPECIFIER = "$(IOS_PROFILE_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D9BFA39225F681CDABAE3FF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = V6JPQCD336;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GIT_COMMIT_HASH = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6851D1C181E5D56AD1214EBA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = V6JPQCD336;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GIT_COMMIT_HASH = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		825BCC50B409EC4AD2CFE243 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
+			};
+			name = Debug;
+		};
+		DA8617E692447AFC2123488B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				API_BASE_URL = "https://jim-greco.com";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				GOOGLE_CLIENT_ID = "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com";
+				GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.YOUR_GOOGLE_IOS_CLIENT_ID;
+				INFOPLIST_FILE = QuickPost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		7CF222208435F1EA5AA3EF07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E058F33249667E0E5B75245B /* Build configuration list for PBXNativeTarget "QuickPostTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				825BCC50B409EC4AD2CFE243 /* Debug */,
+				7CF222208435F1EA5AA3EF07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		441F20500DE84D8ED0C5CF08 /* Build configuration list for PBXProject "QuickPost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9BFA39225F681CDABAE3FF2 /* Debug */,
+				6851D1C181E5D56AD1214EBA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F50630260FE4AD0F8A077FDF /* Build configuration list for PBXNativeTarget "QuickPost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA8617E692447AFC2123488B /* Debug */,
+				FF891F14D9DD6A16D67C57FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0376ECEDD858E53D79F8B454 /* Project object */;
+}

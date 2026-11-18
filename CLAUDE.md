@@ -16,6 +16,9 @@
 | `lib/utils.ts` | `slugify()`, `formatDate()` |
 | `app/admin/AdminClient.tsx` | Client-side editor with write/preview tabs |
 | `middleware.ts` | Protects `/admin/*` via next-auth/middleware |
+| `lib/mutation-guard.ts` | `authorize(req)`: `"browser"` (cookie session, must pass the same-origin check) or `"app"` (bearer token, no origin check) |
+| `lib/app-token.ts` | Verifies the iPhone app's Google ID bearer token (owner only) |
+| `ios/` | Quick Post SwiftUI app (XcodeGen `project.yml`); see `ios/README.md` |
 | `amplify.yml` | Build config (Node 20, `npm ci`, `next build`) |
 
 ## Post types
@@ -30,6 +33,7 @@ NEXTAUTH_SECRET=          # openssl rand -base64 32
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ADMIN_EMAIL=
+GOOGLE_IOS_CLIENT_ID=     # iOS OAuth client id(s), comma-separated; enables the Quick Post app
 DYNAMODB_TABLE_NAME=BlogPosts
 AWS_REGION=us-east-1
 
@@ -48,7 +52,13 @@ npm run dev        # http://localhost:3000
 For local DynamoDB, set `DYNAMODB_ENDPOINT=http://localhost:8000` and run DynamoDB Local.
 
 ## Deployment
-Pushes to `main` auto-deploy via Amplify. No manual deploy step needed.
+Pushes to `main` auto-deploy the web app via Amplify. No manual deploy step needed.
+
+GitHub Actions follow the shared app standard (`jimgreco/consolidated-deploy`
+`docs/APP_STANDARD.md`) in its iOS-only form: `release.yml` (template without the
+server job), `verify.yml` (web checks + iOS tests), `codeql.yml`, `testflight.yml`
+and `verify-testflight.yml`. A push to `main` uploads Quick Post to TestFlight;
+see `ios/README.md`.
 
 ## Infrastructure notes
 - **DNS**: Cloudflare (proxied, orange cloud) with a Worker that proxies `jim-greco.com/*` and `www.jim-greco.com/*` → `main.d1k79dwq6c1dnq.amplifyapp.com`. This bypasses CloudFront alias validation which doesn't work with Cloudflare CNAME flattening.

@@ -7,7 +7,7 @@ const dependencies = (db) => ({
   "next/server": { NextResponse: { json: (body, options) => Response.json(body, options) } },
   "next/cache": {}, "next-auth": {}, "@/lib/auth": {},
   "@/lib/post-input": postInput, "@/lib/dynamo": { publicPost: p => p, ...db },
-  "@/lib/post-store": db, "@/lib/mutation-guard": { isOwner: async () => true, rateLimit: async () => null, revisionFrom: () => 0 },
+  "@/lib/post-store": db, "@/lib/mutation-guard": { isOwner: async () => true, authorize: async () => "browser", rateLimit: async () => null, revisionFrom: () => 0 },
   "@/lib/post-response": { refreshPosts() {}, mutationFailure: error => { throw error } }, "@/lib/utils": {}, "@/lib/bluesky": {}, "@/lib/mastodon": {},
 })
 
@@ -38,9 +38,9 @@ test("public list API does not cache a previously published record", async () =>
   let posts = [{ pk: "public", published: true }]
   const route = load("app/api/posts/route.ts", dependencies({ getPublishedPosts: async () => posts }))
   assert.equal(route.dynamic, "force-dynamic")
-  assert.equal((await route.GET()).headers.get("cache-control"), "no-store")
+  assert.equal((await route.GET(new Request("https://blog.example.test/api/posts"))).headers.get("cache-control"), "no-store")
   posts = []
-  assert.deepEqual(await (await route.GET()).json(), [])
+  assert.deepEqual(await (await route.GET(new Request("https://blog.example.test/api/posts"))).json(), [])
 })
 
 test("saving a draft preserves its content without copying it to logs or syndicating it", async () => {
