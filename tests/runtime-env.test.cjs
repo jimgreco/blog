@@ -9,7 +9,8 @@ test("server runtime variables preserve literal credentials without expansion or
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "blog-runtime-env-"))
   try {
     const env = { NEXTAUTH_SECRET: "SYNTHETIC_${HOME}_$token_\\path", GOOGLE_CLIENT_SECRET: "SYNTHETIC_'quoted'\nsecond line",
-      BLUESKY_PASSWORD: 'SYNTHETIC_"double"_`backtick`', ADMIN_EMAIL: "owner@example.test", UNRELATED_SECRET: "never-export" }
+      BLUESKY_PASSWORD: 'SYNTHETIC_"double"_`backtick`', ADMIN_EMAIL: "owner@example.test",
+      GOOGLE_IOS_CLIENT_ID: "synthetic-ios.apps.googleusercontent.com", UNRELATED_SECRET: "never-export" }
     const content = serialize(env)
     assert.ok(!content.includes("UNRELATED_SECRET"))
     fs.writeFileSync(path.join(directory, ".env.production"), content)
