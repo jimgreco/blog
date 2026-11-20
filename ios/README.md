@@ -1,15 +1,19 @@
 # Quick Post (iPhone)
 
-A small SwiftUI app for posting to jim-greco.com from an iPhone. It opens straight
-to a composer: pick a type, type, tap **Publish**.
+A small SwiftUI app for posting to jim-greco.com from an iPhone. It opens to
+the list of posts and drafts: tap one to edit it, or tap the big **+** to write
+a new one.
 
+- The editor switches between **Markdown** (what you type) and **Preview** (the
+  post rendered: headings, lists, quotes, code, tables, links, images).
 - Notes don't need a title; the first line of the body is used.
 - Link posts have a paste button for the URL on your clipboard.
 - Optional Bluesky/Mastodon text (300-character counter) and link target, like the web editor.
 - Save as a draft instead of publishing.
-- **Posts** (the ⋯ menu) lists posts and drafts; tap one to edit, swipe to delete.
-- The draft is kept on the phone until the blog confirms the save, and a retried
-  new post reuses the same idempotency key, so a flaky connection can't duplicate it.
+- Swipe a post to delete it; long-press a published one to view or share it.
+- Text is kept on the phone until the blog confirms the save and shows at the
+  top of the list as "Unsaved on this iPhone". A retried new post reuses the
+  same idempotency key, so a flaky connection can't duplicate it.
 
 ## How it authenticates
 
@@ -67,6 +71,13 @@ regenerate on a Mac and commit the result:
 
 ```bash
 cd ios && xcodegen generate
+```
+
+To try the screens in the simulator without signing in, launch a debug build
+with the `-demo` argument (sample posts, nothing is sent to the blog):
+
+```bash
+xcrun simctl launch booted com.jimgreco.quickpost -demo
 ```
 
 ## Ideas for later
