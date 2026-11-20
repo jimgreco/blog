@@ -31,7 +31,7 @@ struct RootView: View {
             if client.isRestoring {
                 ProgressView()
             } else if client.isSignedIn {
-                ComposeView()
+                PostListView()
             } else {
                 SignInView()
             }
@@ -55,11 +55,36 @@ final class DraftStore {
     }
 
     private let defaults: UserDefaults
+    /// The post as it was loaded for editing, to tell whether it has been changed.
+    /// Not persisted: an edit restored after a relaunch counts as unsaved.
+    private(set) var pristine: Draft?
+
+    /// True while the store holds text that has not been saved to the blog.
+    var hasUnsavedText: Bool { !draft.isBlank && draft != pristine }
 
     func reset(keeping type: PostType = .note) {
         var fresh = Draft()
         fresh.type = type
+        pristine = nil
         draft = fresh
+    }
+
+    /// Opens a new post, keeping one that is already being written.
+    func startNew() {
+        if draft.isEditing { reset() }
+    }
+
+    /// Loads a post for editing, keeping unsaved changes to that same post.
+    func edit(_ post: Post) {
+        if draft.editingSlug == post.pk && hasUnsavedText { return }
+        let loaded = Draft(editing: post)
+        pristine = loaded
+        draft = loaded
+    }
+
+    /// Called when the editor closes: an opened but unchanged post is not a draft.
+    func closeIfUnchanged() {
+        if draft.isEditing && draft == pristine { reset() }
     }
 
     private func persist() {

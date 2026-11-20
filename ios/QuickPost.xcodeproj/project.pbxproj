@@ -7,93 +7,99 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		000915F67883930E0C640C3B /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F720EDBF39119DFA47EC21 /* SignInView.swift */; };
-		25245DA4BAAB1F8E1ED3E8C6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */; };
-		25AAFE862C12D7EBE4EA65F3 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDC4B1A115511BE8ABD9198 /* Models.swift */; };
-		70C400E5351CDA7DB32E905A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */; };
-		8324C058209A30D50FA40F11 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CD112F7E27CBA70D31270 /* PostListView.swift */; };
-		8CB35E2325F17118C921603D /* QuickPostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */; };
-		9541C50560B227A66C7ABB42 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */; };
-		A089CE35A3D003AD10C5927A /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE67493DAB95D1346363323 /* ComposeView.swift */; };
-		AE1C6612D1AFEED384A1FA73 /* DraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */; };
-		C26B35600A9D08C90F959D82 /* BlogClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551795778DF7F8F5E9A03CF6 /* BlogClient.swift */; };
+		06076EE2FF2A9EC2C0147F53 /* QuickPostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FF642A76741F78079971B3 /* QuickPostApp.swift */; };
+		094BC3EEDA545E49BD33F0AE /* MarkdownPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1124A049B1F4680939493E85 /* MarkdownPreview.swift */; };
+		40E65532148603D41A697B93 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EF183253E00ED9C6F90189C4 /* GoogleSignIn */; };
+		9291E230DCF196980CCF81AB /* DraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978B40296A8A840978CD4D0F /* DraftTests.swift */; };
+		9CBD978F0D6AC2531947D3EB /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7499CBCC61C33FFD4FDF3C80 /* PostListView.swift */; };
+		A4ADCD09E928E24C946956CB /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229B5483C712197057004829 /* SignInView.swift */; };
+		B3BE1505F4CEDF396C587506 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 93BDAC8B72EF33150BBFE46C /* PrivacyInfo.xcprivacy */; };
+		C18CFDC970BE49C03279FEF1 /* BlogClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6835BE181EB2D969DDDC9ACA /* BlogClient.swift */; };
+		DBA824F32A808134367927D1 /* MarkdownTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB26A8A09C877650AEEAE128 /* MarkdownTests.swift */; };
+		DDD999CAD9388E1AD8395617 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C0BF937418FD691ACD30307 /* Assets.xcassets */; };
+		E136EE4765143B6C365E5DE5 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40FDA13CDE851861D40A814 /* Models.swift */; };
+		FD24E72419B98F167E9D880E /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74626EFEC678092138407EC5 /* ComposeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		400A08ACBC9B6F5B9F5CF03B /* PBXContainerItemProxy */ = {
+		18A731B1E51CF82949144310 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0376ECEDD858E53D79F8B454 /* Project object */;
+			containerPortal = A1AE975D3CBDFC0472DFBA17 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 71A42847E58B555BB21EE497;
+			remoteGlobalIDString = 6C14BF8213CDBDE654D2871C;
 			remoteInfo = QuickPost;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00F6216FE5E2EAEF6A61B8B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		20F720EDBF39119DFA47EC21 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
-		2DE67493DAB95D1346363323 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
-		3FDC4B1A115511BE8ABD9198 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftTests.swift; sourceTree = "<group>"; };
-		551795778DF7F8F5E9A03CF6 /* BlogClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogClient.swift; sourceTree = "<group>"; };
-		5F998794DFF362F3A66E0C6E /* QuickPost.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = QuickPost.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPostApp.swift; sourceTree = "<group>"; };
-		D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickPostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		E21CD112F7E27CBA70D31270 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
+		10FF642A76741F78079971B3 /* QuickPostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPostApp.swift; sourceTree = "<group>"; };
+		1124A049B1F4680939493E85 /* MarkdownPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownPreview.swift; sourceTree = "<group>"; };
+		229B5483C712197057004829 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		6835BE181EB2D969DDDC9ACA /* BlogClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogClient.swift; sourceTree = "<group>"; };
+		74626EFEC678092138407EC5 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
+		7499CBCC61C33FFD4FDF3C80 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
+		8167F2331E0B40097F18194A /* QuickPost.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = QuickPost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93BDAC8B72EF33150BBFE46C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		978B40296A8A840978CD4D0F /* DraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftTests.swift; sourceTree = "<group>"; };
+		9C0BF937418FD691ACD30307 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AAB61F0D878E838B4BC325D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B5CC0471345E45DA7A710F93 /* QuickPostTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickPostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40FDA13CDE851861D40A814 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		FB26A8A09C877650AEEAE128 /* MarkdownTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		484625D2A54F129C06DD9BCE /* Frameworks */ = {
+		53D23767215170661C017967 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9541C50560B227A66C7ABB42 /* GoogleSignIn in Frameworks */,
+				40E65532148603D41A697B93 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AFBF9DBF6D9FCF0C77B1064E /* QuickPostTests */ = {
+		0313B87351FEC191BCBEE9D5 = {
 			isa = PBXGroup;
 			children = (
-				51E6A8F8B8EFEC4EC4A4C5B8 /* DraftTests.swift */,
+				714CECE4975A7617755A4FDB /* QuickPost */,
+				1B17B940B539C6BCA1F543C1 /* QuickPostTests */,
+				2FABE3C8A61A99AD2FB03CF7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1B17B940B539C6BCA1F543C1 /* QuickPostTests */ = {
+			isa = PBXGroup;
+			children = (
+				978B40296A8A840978CD4D0F /* DraftTests.swift */,
+				FB26A8A09C877650AEEAE128 /* MarkdownTests.swift */,
 			);
 			path = QuickPostTests;
 			sourceTree = "<group>";
 		};
-		B26E0221A9DA852F47EEEC11 /* Products */ = {
+		2FABE3C8A61A99AD2FB03CF7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5F998794DFF362F3A66E0C6E /* QuickPost.app */,
-				D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */,
+				8167F2331E0B40097F18194A /* QuickPost.app */,
+				B5CC0471345E45DA7A710F93 /* QuickPostTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8BAFAC70F9770D77355CD667 = {
+		714CECE4975A7617755A4FDB /* QuickPost */ = {
 			isa = PBXGroup;
 			children = (
-				DC275A14D676D694CF5FC48C /* QuickPost */,
-				AFBF9DBF6D9FCF0C77B1064E /* QuickPostTests */,
-				B26E0221A9DA852F47EEEC11 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		DC275A14D676D694CF5FC48C /* QuickPost */ = {
-			isa = PBXGroup;
-			children = (
-				01369AC22AB0F1C0B1A279B6 /* Assets.xcassets */,
-				551795778DF7F8F5E9A03CF6 /* BlogClient.swift */,
-				2DE67493DAB95D1346363323 /* ComposeView.swift */,
-				00F6216FE5E2EAEF6A61B8B9 /* Info.plist */,
-				3FDC4B1A115511BE8ABD9198 /* Models.swift */,
-				E21CD112F7E27CBA70D31270 /* PostListView.swift */,
-				DC4F8261D806AE88CB12F34A /* PrivacyInfo.xcprivacy */,
-				A911ACCD7DD8B01E4F5A0889 /* QuickPostApp.swift */,
-				20F720EDBF39119DFA47EC21 /* SignInView.swift */,
+				9C0BF937418FD691ACD30307 /* Assets.xcassets */,
+				6835BE181EB2D969DDDC9ACA /* BlogClient.swift */,
+				74626EFEC678092138407EC5 /* ComposeView.swift */,
+				AAB61F0D878E838B4BC325D5 /* Info.plist */,
+				1124A049B1F4680939493E85 /* MarkdownPreview.swift */,
+				D40FDA13CDE851861D40A814 /* Models.swift */,
+				7499CBCC61C33FFD4FDF3C80 /* PostListView.swift */,
+				93BDAC8B72EF33150BBFE46C /* PrivacyInfo.xcprivacy */,
+				10FF642A76741F78079971B3 /* QuickPostApp.swift */,
+				229B5483C712197057004829 /* SignInView.swift */,
 			);
 			path = QuickPost;
 			sourceTree = "<group>";
@@ -101,13 +107,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		71A42847E58B555BB21EE497 /* QuickPost */ = {
+		6C14BF8213CDBDE654D2871C /* QuickPost */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F50630260FE4AD0F8A077FDF /* Build configuration list for PBXNativeTarget "QuickPost" */;
+			buildConfigurationList = F2FD0789B6F1ED505BF362DF /* Build configuration list for PBXNativeTarget "QuickPost" */;
 			buildPhases = (
-				6DC5D1005372D680A8E1C212 /* Sources */,
-				AB04118B238BFE681BCCB7A2 /* Resources */,
-				484625D2A54F129C06DD9BCE /* Frameworks */,
+				D943A8DD1CB7B188417C0954 /* Sources */,
+				FE701B87E81C8A0BD4CEA60A /* Resources */,
+				53D23767215170661C017967 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -115,124 +121,159 @@
 			);
 			name = QuickPost;
 			packageProductDependencies = (
-				C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */,
+				EF183253E00ED9C6F90189C4 /* GoogleSignIn */,
 			);
 			productName = QuickPost;
-			productReference = 5F998794DFF362F3A66E0C6E /* QuickPost.app */;
+			productReference = 8167F2331E0B40097F18194A /* QuickPost.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DE8CCA30F507284BAD811D19 /* QuickPostTests */ = {
+		D40FA4171F0557F41D4F664C /* QuickPostTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E058F33249667E0E5B75245B /* Build configuration list for PBXNativeTarget "QuickPostTests" */;
+			buildConfigurationList = EEF51EDC4C58D62B7CD3B8F6 /* Build configuration list for PBXNativeTarget "QuickPostTests" */;
 			buildPhases = (
-				7873814D0DCF13E92AF70349 /* Sources */,
+				020D230DD046B220783C7FC4 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				894C947C8B867539AEC231D2 /* PBXTargetDependency */,
+				5543AEB239C526683BA8CA31 /* PBXTargetDependency */,
 			);
 			name = QuickPostTests;
 			packageProductDependencies = (
 			);
 			productName = QuickPostTests;
-			productReference = D0B0B42945B8C3D9EA33D5EF /* QuickPostTests.xctest */;
+			productReference = B5CC0471345E45DA7A710F93 /* QuickPostTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		0376ECEDD858E53D79F8B454 /* Project object */ = {
+		A1AE975D3CBDFC0472DFBA17 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					71A42847E58B555BB21EE497 = {
+					6C14BF8213CDBDE654D2871C = {
 						DevelopmentTeam = V6JPQCD336;
 					};
-					DE8CCA30F507284BAD811D19 = {
+					D40FA4171F0557F41D4F664C = {
 						DevelopmentTeam = V6JPQCD336;
 					};
 				};
 			};
-			buildConfigurationList = 441F20500DE84D8ED0C5CF08 /* Build configuration list for PBXProject "QuickPost" */;
+			buildConfigurationList = B047A66E7D1C9D62515ECD3F /* Build configuration list for PBXProject "QuickPost" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
 				en,
 			);
-			mainGroup = 8BAFAC70F9770D77355CD667;
+			mainGroup = 0313B87351FEC191BCBEE9D5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				A53BB01BA75421A4812737B6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = B26E0221A9DA852F47EEEC11 /* Products */;
+			productRefGroup = 2FABE3C8A61A99AD2FB03CF7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				71A42847E58B555BB21EE497 /* QuickPost */,
-				DE8CCA30F507284BAD811D19 /* QuickPostTests */,
+				6C14BF8213CDBDE654D2871C /* QuickPost */,
+				D40FA4171F0557F41D4F664C /* QuickPostTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AB04118B238BFE681BCCB7A2 /* Resources */ = {
+		FE701B87E81C8A0BD4CEA60A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70C400E5351CDA7DB32E905A /* Assets.xcassets in Resources */,
-				25245DA4BAAB1F8E1ED3E8C6 /* PrivacyInfo.xcprivacy in Resources */,
+				DDD999CAD9388E1AD8395617 /* Assets.xcassets in Resources */,
+				B3BE1505F4CEDF396C587506 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6DC5D1005372D680A8E1C212 /* Sources */ = {
+		020D230DD046B220783C7FC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C26B35600A9D08C90F959D82 /* BlogClient.swift in Sources */,
-				A089CE35A3D003AD10C5927A /* ComposeView.swift in Sources */,
-				25AAFE862C12D7EBE4EA65F3 /* Models.swift in Sources */,
-				8324C058209A30D50FA40F11 /* PostListView.swift in Sources */,
-				8CB35E2325F17118C921603D /* QuickPostApp.swift in Sources */,
-				000915F67883930E0C640C3B /* SignInView.swift in Sources */,
+				9291E230DCF196980CCF81AB /* DraftTests.swift in Sources */,
+				DBA824F32A808134367927D1 /* MarkdownTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7873814D0DCF13E92AF70349 /* Sources */ = {
+		D943A8DD1CB7B188417C0954 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE1C6612D1AFEED384A1FA73 /* DraftTests.swift in Sources */,
+				C18CFDC970BE49C03279FEF1 /* BlogClient.swift in Sources */,
+				FD24E72419B98F167E9D880E /* ComposeView.swift in Sources */,
+				094BC3EEDA545E49BD33F0AE /* MarkdownPreview.swift in Sources */,
+				E136EE4765143B6C365E5DE5 /* Models.swift in Sources */,
+				9CBD978F0D6AC2531947D3EB /* PostListView.swift in Sources */,
+				06076EE2FF2A9EC2C0147F53 /* QuickPostApp.swift in Sources */,
+				A4ADCD09E928E24C946956CB /* SignInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		894C947C8B867539AEC231D2 /* PBXTargetDependency */ = {
+		5543AEB239C526683BA8CA31 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 71A42847E58B555BB21EE497 /* QuickPost */;
-			targetProxy = 400A08ACBC9B6F5B9F5CF03B /* PBXContainerItemProxy */;
+			target = 6C14BF8213CDBDE654D2871C /* QuickPost */;
+			targetProxy = 18A731B1E51CF82949144310 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		FF891F14D9DD6A16D67C57FB /* Release */ = {
+		192E63D914808765C6050DC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
+			};
+			name = Release;
+		};
+		42D6A56EEE9124EC06CA3A82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
+			};
+			name = Debug;
+		};
+		703CE17469DD2FEA751D521D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				API_BASE_URL = "https://jim-greco.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = NO;
-				GOOGLE_CLIENT_ID = "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com";
+				GOOGLE_CLIENT_ID = YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com;
 				GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.YOUR_GOOGLE_IOS_CLIENT_ID;
 				INFOPLIST_FILE = QuickPost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -240,14 +281,13 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost;
-				PROVISIONING_PROFILE_SPECIFIER = "$(IOS_PROFILE_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
-			name = Release;
+			name = Debug;
 		};
-		D9BFA39225F681CDABAE3FF2 /* Debug */ = {
+		7F57303F74F9ACA3C3A0B55F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -314,7 +354,7 @@
 			};
 			name = Debug;
 		};
-		6851D1C181E5D56AD1214EBA /* Release */ = {
+		824B4AF86FADEB98D6E45991 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -374,31 +414,15 @@
 			};
 			name = Release;
 		};
-		825BCC50B409EC4AD2CFE243 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
-			};
-			name = Debug;
-		};
-		DA8617E692447AFC2123488B /* Debug */ = {
+		FD9465C124DBA6592DAF3840 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				API_BASE_URL = "https://jim-greco.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				GENERATE_INFOPLIST_FILE = NO;
-				GOOGLE_CLIENT_ID = "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com";
+				GOOGLE_CLIENT_ID = YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com;
 				GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.YOUR_GOOGLE_IOS_CLIENT_ID;
 				INFOPLIST_FILE = QuickPost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -406,55 +430,39 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost;
+				PROVISIONING_PROFILE_SPECIFIER = "$(IOS_PROFILE_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		7CF222208435F1EA5AA3EF07 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jimgreco.quickpost.tests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickPost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickPost";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E058F33249667E0E5B75245B /* Build configuration list for PBXNativeTarget "QuickPostTests" */ = {
+		B047A66E7D1C9D62515ECD3F /* Build configuration list for PBXProject "QuickPost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				825BCC50B409EC4AD2CFE243 /* Debug */,
-				7CF222208435F1EA5AA3EF07 /* Release */,
+				7F57303F74F9ACA3C3A0B55F /* Debug */,
+				824B4AF86FADEB98D6E45991 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		441F20500DE84D8ED0C5CF08 /* Build configuration list for PBXProject "QuickPost" */ = {
+		EEF51EDC4C58D62B7CD3B8F6 /* Build configuration list for PBXNativeTarget "QuickPostTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D9BFA39225F681CDABAE3FF2 /* Debug */,
-				6851D1C181E5D56AD1214EBA /* Release */,
+				42D6A56EEE9124EC06CA3A82 /* Debug */,
+				192E63D914808765C6050DC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F50630260FE4AD0F8A077FDF /* Build configuration list for PBXNativeTarget "QuickPost" */ = {
+		F2FD0789B6F1ED505BF362DF /* Build configuration list for PBXNativeTarget "QuickPost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DA8617E692447AFC2123488B /* Debug */,
-				FF891F14D9DD6A16D67C57FB /* Release */,
+				703CE17469DD2FEA751D521D /* Debug */,
+				FD9465C124DBA6592DAF3840 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -462,7 +470,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+		A53BB01BA75421A4812737B6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
@@ -473,12 +481,12 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C19A77E2E7A0E300DCE41E47 /* GoogleSignIn */ = {
+		EF183253E00ED9C6F90189C4 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 78D8AD85B3A673A4D6F43985 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			package = A53BB01BA75421A4812737B6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 0376ECEDD858E53D79F8B454 /* Project object */;
+	rootObject = A1AE975D3CBDFC0472DFBA17 /* Project object */;
 }

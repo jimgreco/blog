@@ -1,24 +1,71 @@
 import SwiftUI
 import UIKit
 
-/// The app's home screen: open it and start typing.
+/// The editor for a new or existing post, pushed from the post list. It shows
+/// the Markdown being written or a rendered preview of it.
 struct ComposeView: View {
     @Environment(BlogClient.self) private var client
     @Environment(DraftStore.self) private var store
-    @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var focus: Field?
+    @State private var mode = Mode.markdown
     @State private var saving = false
     @State private var error: String?
-    @State private var published: Post?
-    @State private var showingPosts = false
     @State private var confirmDiscard = false
+    let onSaved: (Post) -> Void
 
     enum Field { case title, body, link, social }
+    enum Mode: String, CaseIterable, Identifiable {
+        case markdown = "Markdown", preview = "Preview"
+        var id: String { rawValue }
+    }
 
     var body: some View {
+        Group {
+            if mode == .preview {
+                MarkdownPreview(title: store.draft.effectiveTitle, link: store.draft.trimmedLink, markdown: store.draft.body)
+            } else {
+                editor
+            }
+        }
+        .navigationTitle(store.draft.isEditing ? "Edit Post" : "New Post")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Picker("View", selection: $mode) {
+                    ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .fixedSize()
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: save) {
+                    if saving { ProgressView() } else { Text(saveLabel).bold() }
+                }
+                .disabled(saving || store.draft.problem != nil)
+            }
+            if store.hasUnsavedText {
+                ToolbarItem(placement: .secondaryAction) {
+                    Button(store.draft.isEditing ? "Discard Changes" : "Discard Draft", systemImage: "trash", role: .destructive) {
+                        confirmDiscard = true
+                    }
+                }
+            }
+        }
+        .confirmationDialog("Discard this text?", isPresented: $confirmDiscard, titleVisibility: .visible) {
+            Button("Discard", role: .destructive) {
+                store.reset()
+                dismiss()
+            }
+        }
+        .onChange(of: mode) { focus = nil }
+        .onAppear { if store.draft.isBlank { focus = .body } }
+        .onDisappear { store.closeIfUnchanged() }
+    }
+
+    private var editor: some View {
         @Bindable var store = store
-        NavigationStack {
-            Form {
+        return Form {
                 Section {
                     Picker("Type", selection: $store.draft.type) {
                         ForEach(PostType.allCases) { Text($0.label).tag($0) }
@@ -83,53 +130,6 @@ struct ComposeView: View {
                     Section { Text(error).foregroundStyle(.red) }
                 }
             }
-            .navigationTitle(store.draft.isEditing ? "Edit Post" : "New Post")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        Button("Posts", systemImage: "list.bullet") { showingPosts = true }
-                        if !store.draft.isBlank {
-                            Button(store.draft.isEditing ? "Stop Editing" : "Discard Draft", systemImage: "trash", role: .destructive) {
-                                confirmDiscard = true
-                            }
-                        }
-                        Divider()
-                        Button("Sign Out \(client.email ?? "")", systemImage: "rectangle.portrait.and.arrow.right") { client.signOut() }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(action: save) {
-                        if saving { ProgressView() } else { Text(saveLabel).bold() }
-                    }
-                    .disabled(saving || store.draft.problem != nil)
-                }
-            }
-            .confirmationDialog("Discard this text?", isPresented: $confirmDiscard, titleVisibility: .visible) {
-                Button("Discard", role: .destructive) { store.reset(keeping: store.draft.type); error = nil }
-            }
-            .sheet(isPresented: $showingPosts) {
-                PostListView { post in
-                    store.draft = Draft(editing: post)
-                    error = nil
-                    showingPosts = false
-                }
-            }
-            .alert(published?.published == true ? "Published" : "Saved", isPresented: Binding(
-                get: { published != nil }, set: { if !$0 { published = nil } }
-            ), presenting: published) { post in
-                if post.published {
-                    Button("View on Blog") { openURL(post.url(base: client.baseURL)) }
-                    Button("Copy Link") { UIPasteboard.general.url = post.url(base: client.baseURL) }
-                }
-                Button("Done", role: .cancel) {}
-            } message: { post in
-                Text(post.title)
-            }
-            .onAppear { if store.draft.body.isEmpty { focus = .body } }
-        }
     }
 
     private var saveLabel: String {
@@ -154,10 +154,12 @@ struct ComposeView: View {
                     post = try await client.create(input, key: draft.creationKey)
                 }
                 store.reset(keeping: draft.type == .link ? .note : draft.type)
-                published = post
+                onSaved(post)
+                dismiss()
                 Task { await client.deliverSocial() }
             } catch {
                 self.error = error.localizedDescription
+                mode = .markdown
             }
         }
     }

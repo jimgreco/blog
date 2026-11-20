@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "71A42847E58B555BB21EE497"
+               BlueprintIdentifier = "6C14BF8213CDBDE654D2871C"
                BuildableName = "QuickPost.app"
                BlueprintName = "QuickPost"
                ReferencedContainer = "container:QuickPost.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71A42847E58B555BB21EE497"
+            BlueprintIdentifier = "6C14BF8213CDBDE654D2871C"
             BuildableName = "QuickPost.app"
             BlueprintName = "QuickPost"
             ReferencedContainer = "container:QuickPost.xcodeproj">
@@ -44,7 +44,7 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DE8CCA30F507284BAD811D19"
+               BlueprintIdentifier = "D40FA4171F0557F41D4F664C"
                BuildableName = "QuickPostTests.xctest"
                BlueprintName = "QuickPostTests"
                ReferencedContainer = "container:QuickPost.xcodeproj">
@@ -68,7 +68,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71A42847E58B555BB21EE497"
+            BlueprintIdentifier = "6C14BF8213CDBDE654D2871C"
             BuildableName = "QuickPost.app"
             BlueprintName = "QuickPost"
             ReferencedContainer = "container:QuickPost.xcodeproj">
@@ -87,7 +87,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71A42847E58B555BB21EE497"
+            BlueprintIdentifier = "6C14BF8213CDBDE654D2871C"
             BuildableName = "QuickPost.app"
             BlueprintName = "QuickPost"
             ReferencedContainer = "container:QuickPost.xcodeproj">
