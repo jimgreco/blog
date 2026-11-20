@@ -1,6 +1,6 @@
 {
   "app": "quickpost",
-  "appId": "TODO_APP_STORE_CONNECT_APP_ID",
+  "appId": "6837041232",
   "bundleId": "com.jimgreco.quickpost",
   "teamId": "V6JPQCD336",
   "certificateSha256": "7fb57dbf0cd7923f9ba97d8801824de79e1ba235dbe78d4a821f8195c30f0bf8",
@@ -8,10 +8,18 @@
   "testerEmailSha256s": [
     "a46343858cf3e5e2fda6339f7063190f295ece10dea50979932e69ec57ea4baa"
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "2cf2fd60-d5df-452a-94aa-c773835aee01",
+      "name": "Family",
+      "internal": true,
+      "testers": 1,
+      "automatic": true
+    }
+  ],
   "profiles": {
     "app": {
-      "uuid": "TODO_PROFILE_UUID",
+      "uuid": "5bfe5214-38f1-4d8e-9d15-6abf1ef0931b",
       "name": "Quick Post App Store",
       "bundleId": "com.jimgreco.quickpost",
       "groups": [],

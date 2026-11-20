@@ -1,6 +1,6 @@
 const fs = require("node:fs")
 // Use Amplify's server runtime file, never next.config.env/client substitution.
-const names = ["NEXTAUTH_URL", "NEXTAUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "ADMIN_EMAIL",
+const names = ["NEXTAUTH_URL", "NEXTAUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_IOS_CLIENT_ID", "ADMIN_EMAIL",
   "DYNAMODB_TABLE_NAME", "DYNAMO_REGION", "BLUESKY_IDENTIFIER", "BLUESKY_PASSWORD",
   "MASTODON_INSTANCE_URL", "MASTODON_ACCESS_TOKEN", "SOCIAL_DISPATCH_SECRET"]
 function serialize(env) {
